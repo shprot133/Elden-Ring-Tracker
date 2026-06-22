@@ -9194,7 +9194,7 @@
     }
 
     const regionImageRequests = new Map();
-    const regionImageCacheVersion = "2026-06-22-fandom-original-images-2";
+    const regionImageCacheVersion = "2026-06-22-fandom-retry-images-1";
     const regionImageTitleAliases = {
       "Все локации": [],
       "Звездные пустоши": ["Звёздные пустоши", "Звездные пустоши"],
@@ -9248,52 +9248,74 @@
       }
     }
 
-    function preloadImage(url = "") {
+    function remoteImageCandidates(url = "") {
       const normalizedUrl = normalizeRemoteImageUrl(url);
-      if (!normalizedUrl) return Promise.resolve("");
-      return new Promise(resolve => {
-        const image = new Image();
-        image.referrerPolicy = "no-referrer";
-        image.onload = () => resolve(normalizedUrl);
-        image.onerror = () => resolve("");
-        image.src = normalizedUrl;
-      });
+      if (!normalizedUrl) return [];
+      const candidates = [normalizedUrl];
+      try {
+        const original = new URL(normalizedUrl);
+        if (/\/revision\/latest\/scale-to-width-down\/\d+/i.test(original.pathname)) {
+          original.pathname = original.pathname.replace(/\/scale-to-width-down\/\d+/i, "");
+          candidates.push(original.toString());
+        }
+        [...candidates].forEach(candidate => {
+          const withoutFormat = new URL(candidate);
+          withoutFormat.searchParams.delete("format");
+          candidates.push(withoutFormat.toString());
+        });
+      } catch {
+        // Keep the normalized URL as the only candidate.
+      }
+      return [...new Set(candidates)];
     }
 
-    function applyRegionImage(url = "") {
-      if (!els.regionHead || !els.regionBgCurrent || !els.regionBgNext) return;
+    async function preloadImage(url = "") {
+      for (const candidate of remoteImageCandidates(url)) {
+        const loaded = await new Promise(resolve => {
+          const image = new Image();
+          image.referrerPolicy = "no-referrer";
+          image.onload = () => resolve(true);
+          image.onerror = () => resolve(false);
+          image.src = candidate;
+        });
+        if (loaded) return candidate;
+      }
+      return "";
+    }
+
+    async function applyRegionImage(url = "") {
+      if (!els.regionHead || !els.regionBgCurrent || !els.regionBgNext) return false;
       window.clearTimeout(regionImageSwapTimer);
       if (!url) {
         setBackgroundImage(els.regionBgCurrent, "");
         setBackgroundImage(els.regionBgNext, "");
         els.regionBgNext.classList.remove("is-visible");
         els.regionHead.classList.remove("has-image");
-        return;
+        return false;
       }
       const requestedRegion = state.region;
-      const normalizedUrl = normalizeRemoteImageUrl(url);
-      preloadImage(normalizedUrl).then(loadedUrl => {
-        if (requestedRegion !== state.region) return;
-        if (!loadedUrl) {
-          setBackgroundImage(els.regionBgCurrent, "");
-          setBackgroundImage(els.regionBgNext, "");
-          els.regionBgNext.classList.remove("is-visible");
-          els.regionHead.classList.remove("has-image");
-          return;
-        }
-        if (els.regionBgCurrent.dataset.image === loadedUrl) {
-          els.regionHead.classList.add("has-image");
-          return;
-        }
-        setBackgroundImage(els.regionBgNext, loadedUrl);
+      const loadedUrl = await preloadImage(url);
+      if (requestedRegion !== state.region) return false;
+      if (!loadedUrl) {
+        setBackgroundImage(els.regionBgCurrent, "");
+        setBackgroundImage(els.regionBgNext, "");
+        els.regionBgNext.classList.remove("is-visible");
+        els.regionHead.classList.remove("has-image");
+        return false;
+      }
+      if (els.regionBgCurrent.dataset.image === loadedUrl) {
         els.regionHead.classList.add("has-image");
-        els.regionBgNext.classList.add("is-visible");
-        regionImageSwapTimer = window.setTimeout(() => {
-          setBackgroundImage(els.regionBgCurrent, loadedUrl);
-          els.regionBgNext.classList.remove("is-visible");
-          setBackgroundImage(els.regionBgNext, "");
-        }, 500);
-      });
+        return true;
+      }
+      setBackgroundImage(els.regionBgNext, loadedUrl);
+      els.regionHead.classList.add("has-image");
+      els.regionBgNext.classList.add("is-visible");
+      regionImageSwapTimer = window.setTimeout(() => {
+        setBackgroundImage(els.regionBgCurrent, loadedUrl);
+        els.regionBgNext.classList.remove("is-visible");
+        setBackgroundImage(els.regionBgNext, "");
+      }, 500);
+      return true;
     }
 
     async function fetchRegionImage(region) {
@@ -9326,9 +9348,17 @@
 
     function updateRegionImage(region) {
       const cached = state.regionImages[region];
-      const hasCuratedTitles = Boolean(regionImageTitleAliases[region]);
-      applyRegionImage(cached || "");
-      if ((cached !== undefined && (cached || !hasCuratedTitles)) || regionImageRequests.has(region)) return;
+      if (cached) {
+        applyRegionImage(cached).then(loaded => {
+          if (loaded || state.region !== region) return;
+          delete state.regionImages[region];
+          saveRegionImages();
+          updateRegionImage(region);
+        });
+        return;
+      }
+      applyRegionImage("");
+      if (regionImageRequests.has(region)) return;
       const request = fetchRegionImage(region).then(url => {
         state.regionImages[region] = url || "";
         saveRegionImages();
@@ -9339,8 +9369,7 @@
     }
 
     const itemIconRequests = new Map();
-    const itemIconCacheVersion = "2026-06-22-fandom-original-images-1";
-    let itemIconPrefetchStarted = false;
+    const itemIconCacheVersion = "2026-06-22-fandom-retry-images-1";
     let itemIconObserver = null;
 
     function saveItemIcons() {
@@ -9357,13 +9386,7 @@
 
     function refreshItemIconCache() {
       if (localStorage.getItem("elden-ring-item-icons-version") === itemIconCacheVersion) return;
-      Object.entries(state.itemIcons).forEach(([title, url]) => {
-        if (!isPngImageUrl(url)) {
-          delete state.itemIcons[title];
-        } else {
-          state.itemIcons[title] = normalizeRemoteImageUrl(url);
-        }
-      });
+      Object.keys(state.itemIcons).forEach(title => delete state.itemIcons[title]);
       saveItemIcons();
       localStorage.setItem("elden-ring-item-icons-version", itemIconCacheVersion);
     }
@@ -9488,21 +9511,20 @@
       return batch[title] || await fetchItemIconFromPageImages(title);
     }
 
-    function applyItemIcon(element, url = "") {
-      if (!element || !isPngImageUrl(url)) return;
-      const normalizedUrl = normalizeRemoteImageUrl(url);
+    async function applyItemIcon(element, url = "") {
+      if (!element || !isPngImageUrl(url)) return false;
       const requestId = `${Date.now()}-${Math.random()}`;
       element.dataset.iconRequest = requestId;
-      preloadImage(normalizedUrl).then(loadedUrl => {
-        if (element.dataset.iconRequest !== requestId) return;
-        if (!loadedUrl) {
-          element.style.backgroundImage = "";
-          element.classList.remove("has-image");
-          return;
-        }
-        element.style.backgroundImage = `url("${String(loadedUrl).replaceAll('"', '\\"')}")`;
-        element.classList.add("has-image");
-      });
+      const loadedUrl = await preloadImage(url);
+      if (element.dataset.iconRequest !== requestId) return false;
+      if (!loadedUrl) {
+        element.style.backgroundImage = "";
+        element.classList.remove("has-image");
+        return false;
+      }
+      element.style.backgroundImage = `url("${String(loadedUrl).replaceAll('"', '\\"')}")`;
+      element.classList.add("has-image");
+      return true;
     }
 
     function itemFallbackIcon(category = "") {
@@ -9527,21 +9549,35 @@
       });
     }
 
-    function loadItemIcon(element) {
+    async function loadItemIcon(element) {
+      if (!element || element.dataset.iconLoading === "true") return;
+      element.dataset.iconLoading = "true";
       const manualIcon = element?.dataset.manualIcon;
       if (manualIcon) {
-        applyItemIcon(element, manualIcon);
+        await applyItemIcon(element, manualIcon);
+        delete element.dataset.iconLoading;
         return;
       }
       const title = element?.dataset.itemIcon;
-      if (!title) return;
-      const cached = state.itemIcons[title];
-      if (isPngImageUrl(cached)) {
-        applyItemIcon(element, cached);
+      if (!title) {
+        delete element.dataset.iconLoading;
         return;
       }
+      const cached = state.itemIcons[title];
+      if (isPngImageUrl(cached)) {
+        const loaded = await applyItemIcon(element, cached);
+        if (loaded) {
+          delete element.dataset.iconLoading;
+          return;
+        }
+        delete state.itemIcons[title];
+        saveItemIcons();
+      }
       if (cached && !isPngImageUrl(cached)) delete state.itemIcons[title];
-      if (cached === "" || itemIconRequests.has(title)) return;
+      if (itemIconRequests.has(title)) {
+        delete element.dataset.iconLoading;
+        return;
+      }
       const request = fetchItemIcon(title).then(url => {
         state.itemIcons[title] = isPngImageUrl(url) ? url : "";
         saveItemIcons();
@@ -9549,6 +9585,8 @@
         applyVisibleItemIcon(title, state.itemIcons[title]);
       });
       itemIconRequests.set(title, request);
+      await request;
+      delete element.dataset.iconLoading;
     }
 
     function hydrateItemIcons() {
@@ -9565,7 +9603,7 @@
             itemIconObserver.unobserve(entry.target);
             loadItemIcon(entry.target);
           });
-        }, { root: els.content || null, rootMargin: "260px 0px" });
+        }, { root: null, rootMargin: "320px 0px" });
       }
       icons.forEach(icon => {
         if (icon.dataset.manualIcon) {
@@ -9578,42 +9616,20 @@
         } else if (cached && !isPngImageUrl(cached)) {
           delete state.itemIcons[icon.dataset.itemIcon];
           itemIconObserver.observe(icon);
-        } else if (cached !== "") {
+        } else {
           itemIconObserver.observe(icon);
         }
       });
-    }
-
-    function allItemIconTitles() {
-      return [...new Set(items
-        .filter(item => !itemIconUrl(item))
-        .map(itemIconKey)
-        .filter(Boolean)
-      )];
-    }
-
-    function delay(ms) {
-      return new Promise(resolve => window.setTimeout(resolve, ms));
-    }
-
-    async function prefetchAllItemIcons() {
-      if (itemIconPrefetchStarted || typeof fetch !== "function") return;
-      itemIconPrefetchStarted = true;
-      const titles = allItemIconTitles()
-        .filter(title => state.itemIcons[title] === undefined || (state.itemIcons[title] && !isPngImageUrl(state.itemIcons[title])));
-
-      for (let index = 0; index < titles.length; index += 35) {
-        const chunk = titles.slice(index, index + 35);
-        const batch = await fetchItemIconsBatch(chunk);
-        for (const title of chunk) {
-          let url = batch[title] || "";
-          if (!isPngImageUrl(url)) url = await fetchItemIconFromPageImages(title);
-          state.itemIcons[title] = isPngImageUrl(url) ? url : "";
-          applyVisibleItemIcon(title, state.itemIcons[title]);
-        }
-        saveItemIcons();
-        await delay(140);
-      }
+      icons
+        .filter(icon => {
+          const rect = icon.getBoundingClientRect();
+          return rect.bottom >= -320 && rect.top <= window.innerHeight + 320;
+        })
+        .slice(0, 24)
+        .forEach(icon => {
+          itemIconObserver.unobserve(icon);
+          loadItemIcon(icon);
+        });
     }
 
     function filteredItems() {
@@ -10799,7 +10815,6 @@
     });
 
     render();
-    window.setTimeout(prefetchAllItemIcons, 500);
   </script>
   <script>
     let deferredInstallPrompt = null;
