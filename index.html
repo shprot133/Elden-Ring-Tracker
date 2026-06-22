@@ -1897,6 +1897,8 @@
           <button class="secondary edit-only" data-edit-region>Редактировать локацию</button>
           <button class="primary edit-only" data-add-item>Добавить предмет</button>
           <button class="secondary edit-only" data-wiki-import>Пополнить из Fandom</button>
+          <button class="primary edit-only" data-export-tracker-data>📥 Завантажити оновлений tracker-data.js</button>
+          <button class="secondary edit-only" data-clear-local-edits>Очистити локальні правки</button>
         </div>
       </aside>
 
@@ -1927,10 +1929,10 @@
     <input id="userDataInput" class="hidden-input" type="file" accept="application/json">
   </div>
 
-  <script src="tracker-data.js?v=20260622-03"></script>
+  <script src="tracker-data.js?v=20260622-04"></script>
   <script>
     const trackerMeta = window.ELDEN_RING_TRACKER_META || {
-      databaseVersion: "2026.06.22-03",
+      databaseVersion: "2026.06.22-04",
       updatedAt: "2026-06-22",
       itemCount: 0,
       dlcItemCount: 0,
@@ -9199,6 +9201,95 @@
       }
     }
 
+    function exportedDatabaseVersion() {
+      const now = new Date();
+      const date = [
+        now.getFullYear(),
+        String(now.getMonth() + 1).padStart(2, "0"),
+        String(now.getDate()).padStart(2, "0")
+      ].join(".");
+      const time = [
+        String(now.getHours()).padStart(2, "0"),
+        String(now.getMinutes()).padStart(2, "0"),
+        String(now.getSeconds()).padStart(2, "0")
+      ].join("");
+      return `${date}-${time}`;
+    }
+
+    function exportedTrackerMeta(exportedItems) {
+      const deletedRegions = state.deletedRegions;
+      const exportedRegions = [...expectedRegions, ...state.customRegions]
+        .filter(region => region?.name && !deletedRegions.has(region.name))
+        .filter((region, index, list) => list.findIndex(entry => entry.name === region.name) === index)
+        .map(region => ({ ...region }));
+      const exportedDescriptions = Object.fromEntries(
+        Object.entries(descriptions).filter(([region]) => !deletedRegions.has(region))
+      );
+      const exportedParentRegions = Object.fromEntries(
+        Object.entries(parentRegions).filter(([region, parent]) =>
+          !deletedRegions.has(region) && !deletedRegions.has(parent)
+        )
+      );
+      const version = exportedDatabaseVersion();
+      const updatedAt = new Date().toISOString().slice(0, 10);
+      const dlcItemCount = exportedItems.filter(item => isDlcRegion(parentRegion(item.region))).length;
+
+      return {
+        ...trackerMeta,
+        databaseVersion: version,
+        updatedAt,
+        itemCount: exportedItems.length,
+        dlcItemCount,
+        changeLog: [
+          `Экспортированы ручные правки из режима редактирования (${updatedAt}).`,
+          ...(trackerMeta.changeLog || [])
+        ],
+        regionDescriptions: exportedDescriptions,
+        expectedRegions: exportedRegions,
+        parentRegions: exportedParentRegions
+      };
+    }
+
+    function buildTrackerDataSource() {
+      const exportedItems = items.map(item => JSON.parse(JSON.stringify(item)));
+      const exportedMeta = exportedTrackerMeta(exportedItems);
+      return [
+        `window.ELDEN_RING_TRACKER_META = ${JSON.stringify(exportedMeta, null, 2)};`,
+        "",
+        `window.ELDEN_RING_TRACKER_ITEMS = ${JSON.stringify(exportedItems, null, 2)};`,
+        ""
+      ].join("\n");
+    }
+
+    function exportTrackerDataFile() {
+      const source = buildTrackerDataSource();
+      const blob = new Blob([source], { type: "text/javascript;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "tracker-data.js";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+      alert("Файл завантажено! Завантажте його на GitHub щоб зміни з'явились на всіх пристроях (замініть старий tracker-data.js у репозиторії).");
+    }
+
+    function clearLocalTrackerEdits() {
+      const keys = [
+        "elden-ring-route-edits",
+        "elden-ring-route-deleted-items",
+        "elden-ring-route-custom-items",
+        "elden-ring-custom-regions",
+        "elden-ring-region-edits",
+        "elden-ring-deleted-regions"
+      ];
+      if (!confirm("Очистити всі локальні правки предметів і локацій? Прогрес зібраних предметів та нотатки гравця залишаться.")) return;
+      keys.forEach(key => localStorage.removeItem(key));
+      alert("Локальні правки очищено. Трекер буде перезавантажено.");
+      window.location.reload();
+    }
+
     function remoteImageCandidates(url = "") {
       const normalizedUrl = normalizeRemoteImageUrl(url);
       if (!normalizedUrl) return [];
@@ -10136,6 +10227,8 @@
       const importButton = event.target.closest("[data-import-backup]");
       const exportUserDataButton = event.target.closest("[data-export-user-data]");
       const importUserDataButton = event.target.closest("[data-import-user-data]");
+      const exportTrackerDataButton = event.target.closest("[data-export-tracker-data]");
+      const clearLocalEditsButton = event.target.closest("[data-clear-local-edits]");
       const toggleEditModeButton = event.target.closest("[data-toggle-edit-mode]");
       const themeToggleButton = event.target.closest("[data-theme-toggle]");
       const themeChoiceButton = event.target.closest("[data-theme-choice]");
@@ -10152,7 +10245,7 @@
       const clearSearchButton = event.target.closest("[data-clear-search]");
       const mobileBackButton = event.target.closest("[data-mobile-back]");
 
-      if (!state.editMode && (addItemButton || wikiImportButton || addRegionButton || editRegionButton || resetEditButton || deleteItemButton || fillWikiButton || deleteRegionButton || resetRegionButton)) {
+      if (!state.editMode && (addItemButton || wikiImportButton || addRegionButton || editRegionButton || resetEditButton || deleteItemButton || fillWikiButton || deleteRegionButton || resetRegionButton || exportTrackerDataButton || clearLocalEditsButton)) {
         return;
       }
 
@@ -10381,6 +10474,16 @@
         }
       }
 
+      if (exportTrackerDataButton) {
+        exportTrackerDataFile();
+        return;
+      }
+
+      if (clearLocalEditsButton) {
+        clearLocalTrackerEdits();
+        return;
+      }
+
       if (exportButton) {
         exportBackup();
       }
@@ -10526,7 +10629,7 @@
 
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
-        const appShellVersion = "2026.06.22-03";
+        const appShellVersion = "2026.06.22-04";
         const appShellVersionKey = "elden-ring-app-shell-version";
         const storedShellVersion = localStorage.getItem(appShellVersionKey);
         if (storedShellVersion !== appShellVersion) {
