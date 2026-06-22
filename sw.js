@@ -1,11 +1,11 @@
-const CACHE_NAME = "elden-ring-tracker-v2";
+const CACHE_NAME = "elden-ring-tracker-v3";
 const ASSETS = [
   "./",
   "./index.html",
   "./tracker-data.js?v=20260622-01",
-  "./manifest.json",
-  "./icons/icon-192.png",
-  "./icons/icon-512.png"
+  "./manifest.json?v=2",
+  "./icons/icon-192.png?v=2",
+  "./icons/icon-512.png?v=2"
 ];
 
 self.addEventListener("install", event => {
