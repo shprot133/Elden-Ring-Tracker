@@ -1057,12 +1057,12 @@
     }
 
     .item-icon::before {
-      content: "";
-      width: 15px;
-      height: 15px;
-      border-radius: 50%;
-      border: 1px solid rgba(var(--theme-accent-rgb), .4);
-      opacity: .38;
+      content: attr(data-fallback-icon);
+      color: rgba(var(--theme-accent-rgb), .72);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 20px;
+      line-height: 1;
+      opacity: .72;
     }
 
     .item-icon.has-image {
@@ -1373,108 +1373,6 @@
       line-height: 1.45;
     }
 
-    .mobile-bosses {
-      display: none;
-    }
-
-    .boss-panel {
-      display: grid;
-      gap: 10px;
-      margin-top: 18px;
-    }
-
-    .boss-panel-title,
-    .boss-toggle {
-      color: var(--gold-2);
-      font-size: 12px;
-      font-weight: 850;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-    }
-
-    .boss-toggle {
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0;
-      border: 0;
-      background: transparent;
-      text-align: left;
-    }
-
-    .boss-list {
-      display: grid;
-      gap: 8px;
-    }
-
-    .boss-row {
-      display: grid;
-      grid-template-columns: auto minmax(0, 1fr) auto auto;
-      gap: 10px;
-      align-items: center;
-      padding: 10px;
-      border: 1px solid rgba(var(--theme-text-soft-rgb), .12);
-      border-radius: var(--radius);
-      background: rgba(var(--theme-bg-tertiary-rgb), .46);
-    }
-
-    .boss-row.has-reward {
-      border-color: rgba(var(--theme-accent-rgb), .32);
-      background: rgba(var(--theme-accent-rgb), .08);
-    }
-
-    .boss-icon {
-      color: var(--gold-2);
-      font-size: 16px;
-    }
-
-    .boss-main {
-      min-width: 0;
-      display: grid;
-      gap: 4px;
-    }
-
-    .boss-main strong,
-    .boss-main span {
-      overflow-wrap: anywhere;
-    }
-
-    .boss-main span {
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.35;
-    }
-
-    .boss-reward {
-      width: fit-content;
-      padding: 0;
-      color: var(--gold-2);
-      border: 0;
-      background: transparent;
-      font-size: 12px;
-      font-weight: 800;
-      text-align: left;
-      text-decoration: underline;
-      text-underline-offset: 3px;
-    }
-
-    .boss-tag {
-      white-space: nowrap;
-      color: var(--soft);
-      border: 1px solid rgba(var(--theme-text-soft-rgb), .18);
-      border-radius: 999px;
-      padding: 5px 8px;
-      font-size: 11px;
-      font-weight: 800;
-    }
-
-    .boss-tag.required {
-      color: var(--theme-bg-primary);
-      border-color: rgba(var(--theme-accent-strong-rgb), .72);
-      background: var(--gold-2);
-    }
-
     .editor {
       display: grid;
       gap: 12px;
@@ -1528,32 +1426,6 @@
 
     .editor textarea.compact {
       min-height: 82px;
-    }
-
-    .boss-editor {
-      display: grid;
-      gap: 10px;
-      grid-column: 1 / -1;
-    }
-
-    .boss-editor-row {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
-      padding: 12px;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: rgba(var(--theme-bg-tertiary-rgb), .5);
-    }
-
-    .boss-editor-row .wide {
-      grid-column: 1 / -1;
-    }
-
-    .boss-editor-actions {
-      display: flex;
-      justify-content: flex-end;
-      grid-column: 1 / -1;
     }
 
     .editor input:focus,
@@ -1754,41 +1626,6 @@
 
       .region-head {
         margin-top: 12px;
-      }
-
-      .mobile-bosses {
-        display: block;
-        padding: 0 16px 12px;
-      }
-
-      .mobile-bosses .boss-panel {
-        margin-top: 0;
-        padding: 12px;
-        border: 1px solid rgba(var(--theme-text-soft-rgb), .12);
-        border-radius: var(--radius);
-        background: rgba(var(--theme-bg-secondary-rgb), .72);
-      }
-
-      .boss-row {
-        grid-template-columns: auto minmax(0, 1fr);
-      }
-
-      .boss-row .boss-tag,
-      .boss-row .link {
-        justify-self: start;
-      }
-
-      .boss-row .link {
-        grid-column: 2;
-      }
-
-      .boss-editor-row {
-        grid-template-columns: 1fr;
-      }
-
-      .boss-editor-row .wide,
-      .boss-editor-actions {
-        grid-column: 1;
       }
 
       .steps {
@@ -2060,7 +1897,6 @@
             <button class="chip" data-status="done">Собрано</button>
           </div>
         </div>
-        <div id="mobileBosses" class="mobile-bosses"></div>
         <div id="route" class="route"></div>
       </section>
 
@@ -2076,8 +1912,8 @@
   <script src="tracker-data.js"></script>
   <script>
     const trackerMeta = window.ELDEN_RING_TRACKER_META || {
-      databaseVersion: "2026.06.16-01",
-      updatedAt: "2026-06-16",
+      databaseVersion: "2026.06.21-01",
+      updatedAt: "2026-06-21",
       itemCount: 0,
       dlcItemCount: 0,
       changeLog: []
@@ -8594,7 +8430,6 @@
       addingRegion: false,
       editingRegion: false,
       collapsedRegionSections: JSON.parse(localStorage.getItem("elden-ring-collapsed-region-sections") || "{}"),
-      collapsedBossRegions: JSON.parse(localStorage.getItem("elden-ring-collapsed-boss-regions") || "{}"),
       regionImages: JSON.parse(localStorage.getItem("elden-ring-region-images") || "{}"),
       itemIcons: JSON.parse(localStorage.getItem("elden-ring-item-icons") || "{}"),
       playerNotes: JSON.parse(localStorage.getItem("elden-ring-player-notes") || "{}"),
@@ -8635,7 +8470,6 @@
       regionTitle: document.querySelector("#regionTitle"),
       regionBgCurrent: document.querySelector("#regionBgCurrent"),
       regionBgNext: document.querySelector("#regionBgNext"),
-      mobileBosses: document.querySelector("#mobileBosses"),
       doneCount: document.querySelector("#doneCount"),
       totalCount: document.querySelector("#totalCount"),
       percentCount: document.querySelector("#percentCount"),
@@ -8848,71 +8682,23 @@
       return descriptions[region] || entry?.note || "";
     }
 
-    function regionBosses(region) {
-      const entry = editableRegions().find(item => item.name === region);
-      return Array.isArray(entry?.bosses) ? entry.bosses : [];
-    }
-
-    function bossRewardItem(reward = "") {
-      if (!reward) return null;
-      const normalized = reward.trim().toLocaleLowerCase("ru");
-      return items.find(item => item.name.trim().toLocaleLowerCase("ru") === normalized) || null;
-    }
-
-    function bossListMarkup(region, collapsible = false) {
-      const bosses = regionBosses(region);
-      if (!bosses.length) return "";
-      const collapsed = Boolean(state.collapsedBossRegions[region]);
-      const rows = bosses.map(boss => {
-        const rewardItem = bossRewardItem(boss.reward);
-        return `
-          <div class="boss-row ${rewardItem ? "has-reward" : ""}">
-            <span class="boss-icon" aria-hidden="true">⚔️</span>
-            <div class="boss-main">
-              <strong>${escapeHtml(boss.name)}</strong>
-              <span>${escapeHtml(boss.location || "Место не указано")}</span>
-              ${rewardItem ? `<button class="boss-reward" type="button" data-select="${escapeHtml(rewardItem.id)}">${escapeHtml(boss.reward)}</button>` : boss.reward ? `<span>${escapeHtml(boss.reward)}</span>` : ""}
-            </div>
-            <span class="boss-tag ${boss.optional ? "" : "required"}">${boss.optional ? "Необязательный" : "Обязательный"}</span>
-            <a class="link" href="${escapeHtml(boss.link)}" target="_blank" rel="noreferrer">Fandom</a>
-          </div>
-        `;
-      }).join("");
-
-      return `
-        <section class="boss-panel">
-          ${collapsible
-            ? `<button class="boss-toggle" type="button" data-toggle-bosses="${escapeHtml(region)}"><span>БОССЫ ЛОКАЦИИ</span><span>${collapsed ? "▶" : "▼"}</span></button>`
-            : `<div class="boss-panel-title">БОССЫ ЛОКАЦИИ</div>`}
-          ${!collapsible || !collapsed ? `<div class="boss-list">${rows}</div>` : ""}
-        </section>
-      `;
-    }
-
-    function renderMobileBosses() {
-      if (!els.mobileBosses) return;
-      els.mobileBosses.innerHTML = state.region === "Все локации" ? "" : bossListMarkup(state.region, true);
-    }
-
     function regionEditKey(region) {
       const saved = Object.entries(state.regionEdits).find(([, edit]) => edit?.name === region);
       return saved ? saved[0] : region;
     }
 
-    function applyRegionRename(oldName, newName, note = "", bosses) {
+    function applyRegionRename(oldName, newName, note = "") {
       const finalName = newName.trim() || oldName;
       expectedRegions.forEach(region => {
         if (region.name === oldName) {
           region.name = finalName;
           region.note = note || region.note;
-          if (Array.isArray(bosses)) region.bosses = bosses;
         }
       });
       state.customRegions.forEach(region => {
         if (region.name === oldName) {
           region.name = finalName;
           region.note = note || region.note;
-          if (Array.isArray(bosses)) region.bosses = bosses;
         }
       });
       items.forEach(item => {
@@ -8929,29 +8715,16 @@
     function applySavedRegionEdits() {
       Object.entries(state.regionEdits).forEach(([originalName, edit]) => {
         if (!edit || typeof edit !== "object") return;
-        applyRegionRename(originalName, edit.name || originalName, edit.note || "", edit.bosses);
+        applyRegionRename(originalName, edit.name || originalName, edit.note || "");
       });
-    }
-
-    function bossesFromRegionForm(form) {
-      return [...form.querySelectorAll("[data-boss-editor-row]")]
-        .map(row => ({
-          name: row.querySelector('[name="bossName"]')?.value.trim() || "",
-          location: row.querySelector('[name="bossLocation"]')?.value.trim() || "",
-          reward: row.querySelector('[name="bossReward"]')?.value.trim() || "",
-          optional: row.querySelector('[name="bossOptional"]')?.value !== "false",
-          link: row.querySelector('[name="bossLink"]')?.value.trim() || ""
-        }))
-        .filter(boss => boss.name);
     }
 
     function createRegion(form) {
       const name = form.regionName.value.trim();
       if (!name) return;
       const note = form.regionNote?.value?.trim() || "Пользовательский раздел.";
-      const bosses = bossesFromRegionForm(form);
       if (!state.customRegions.some(region => region.name === name) && !expectedRegions.some(region => region.name === name)) {
-        state.customRegions.push({ name, source: "Пользовательский", note, bosses });
+        state.customRegions.push({ name, source: "Пользовательский", note });
       }
       descriptions[name] = note;
       saveCustomRegions();
@@ -8964,9 +8737,8 @@
       const key = regionEditKey(oldName);
       const newName = form.regionName.value.trim() || oldName;
       const note = form.regionNote?.value?.trim() || regionNote(oldName);
-      const bosses = bossesFromRegionForm(form);
-      const finalName = applyRegionRename(oldName, newName, note, bosses);
-      state.regionEdits[key] = { name: finalName, note: descriptions[finalName] || note, bosses };
+      const finalName = applyRegionRename(oldName, newName, note);
+      state.regionEdits[key] = { name: finalName, note: descriptions[finalName] || note };
       saveCustomRegions();
       saveRegionEdits();
       state.region = finalName;
@@ -9365,7 +9137,7 @@
     }
 
     const regionImageRequests = new Map();
-    const regionImageCacheVersion = "2026-06-15-region-photo-aliases-1";
+    const regionImageCacheVersion = "2026-06-22-fandom-original-images-2";
     const regionImageTitleAliases = {
       "Все локации": [],
       "Звездные пустоши": ["Звёздные пустоши", "Звездные пустоши"],
@@ -9386,7 +9158,7 @@
 
     function refreshRegionImageCache() {
       if (localStorage.getItem("elden-ring-region-images-version") === regionImageCacheVersion) return;
-      Object.keys(regionImageTitleAliases).forEach(region => {
+      Object.keys(state.regionImages).forEach(region => {
         delete state.regionImages[region];
       });
       saveRegionImages();
@@ -9405,6 +9177,32 @@
       element.dataset.image = url || "";
     }
 
+    function normalizeRemoteImageUrl(url = "") {
+      const value = String(url || "").trim();
+      if (!value || !/^https?:\/\//i.test(value)) return value;
+      try {
+        const parsed = new URL(value);
+        if (parsed.hostname === "static.wikia.nocookie.net") {
+          parsed.searchParams.set("format", "original");
+        }
+        return parsed.toString();
+      } catch {
+        return value;
+      }
+    }
+
+    function preloadImage(url = "") {
+      const normalizedUrl = normalizeRemoteImageUrl(url);
+      if (!normalizedUrl) return Promise.resolve("");
+      return new Promise(resolve => {
+        const image = new Image();
+        image.referrerPolicy = "no-referrer";
+        image.onload = () => resolve(normalizedUrl);
+        image.onerror = () => resolve("");
+        image.src = normalizedUrl;
+      });
+    }
+
     function applyRegionImage(url = "") {
       if (!els.regionHead || !els.regionBgCurrent || !els.regionBgNext) return;
       window.clearTimeout(regionImageSwapTimer);
@@ -9415,18 +9213,30 @@
         els.regionHead.classList.remove("has-image");
         return;
       }
-      if (els.regionBgCurrent.dataset.image === url) {
+      const requestedRegion = state.region;
+      const normalizedUrl = normalizeRemoteImageUrl(url);
+      preloadImage(normalizedUrl).then(loadedUrl => {
+        if (requestedRegion !== state.region) return;
+        if (!loadedUrl) {
+          setBackgroundImage(els.regionBgCurrent, "");
+          setBackgroundImage(els.regionBgNext, "");
+          els.regionBgNext.classList.remove("is-visible");
+          els.regionHead.classList.remove("has-image");
+          return;
+        }
+        if (els.regionBgCurrent.dataset.image === loadedUrl) {
+          els.regionHead.classList.add("has-image");
+          return;
+        }
+        setBackgroundImage(els.regionBgNext, loadedUrl);
         els.regionHead.classList.add("has-image");
-        return;
-      }
-      setBackgroundImage(els.regionBgNext, url);
-      els.regionHead.classList.add("has-image");
-      els.regionBgNext.classList.add("is-visible");
-      regionImageSwapTimer = window.setTimeout(() => {
-        setBackgroundImage(els.regionBgCurrent, url);
-        els.regionBgNext.classList.remove("is-visible");
-        setBackgroundImage(els.regionBgNext, "");
-      }, 500);
+        els.regionBgNext.classList.add("is-visible");
+        regionImageSwapTimer = window.setTimeout(() => {
+          setBackgroundImage(els.regionBgCurrent, loadedUrl);
+          els.regionBgNext.classList.remove("is-visible");
+          setBackgroundImage(els.regionBgNext, "");
+        }, 500);
+      });
     }
 
     async function fetchRegionImage(region) {
@@ -9472,7 +9282,7 @@
     }
 
     const itemIconRequests = new Map();
-    const itemIconCacheVersion = "2026-06-16-png-icons-cleanup-1";
+    const itemIconCacheVersion = "2026-06-22-fandom-original-images-1";
     let itemIconPrefetchStarted = false;
     let itemIconObserver = null;
 
@@ -9491,7 +9301,11 @@
     function refreshItemIconCache() {
       if (localStorage.getItem("elden-ring-item-icons-version") === itemIconCacheVersion) return;
       Object.entries(state.itemIcons).forEach(([title, url]) => {
-        if (!isPngImageUrl(url)) delete state.itemIcons[title];
+        if (!isPngImageUrl(url)) {
+          delete state.itemIcons[title];
+        } else {
+          state.itemIcons[title] = normalizeRemoteImageUrl(url);
+        }
       });
       saveItemIcons();
       localStorage.setItem("elden-ring-item-icons-version", itemIconCacheVersion);
@@ -9619,8 +9433,34 @@
 
     function applyItemIcon(element, url = "") {
       if (!element || !isPngImageUrl(url)) return;
-      element.style.backgroundImage = `url("${String(url).replaceAll('"', '\\"')}")`;
-      element.classList.add("has-image");
+      const normalizedUrl = normalizeRemoteImageUrl(url);
+      const requestId = `${Date.now()}-${Math.random()}`;
+      element.dataset.iconRequest = requestId;
+      preloadImage(normalizedUrl).then(loadedUrl => {
+        if (element.dataset.iconRequest !== requestId) return;
+        if (!loadedUrl) {
+          element.style.backgroundImage = "";
+          element.classList.remove("has-image");
+          return;
+        }
+        element.style.backgroundImage = `url("${String(loadedUrl).replaceAll('"', '\\"')}")`;
+        element.classList.add("has-image");
+      });
+    }
+
+    function itemFallbackIcon(category = "") {
+      const icons = {
+        "Боссы": "⚔",
+        "Оружие": "†",
+        "Щиты": "◇",
+        "Броня": "♜",
+        "Талисманы": "◆",
+        "Пепел войны": "✦",
+        "Прах духов": "♟",
+        "Заклинания": "✧",
+        "Молитвы": "✥"
+      };
+      return icons[category] || "•";
     }
 
     function applyVisibleItemIcon(title, url) {
@@ -10076,40 +9916,7 @@
       `;
     }
 
-    function bossEditorRow(boss = {}) {
-      return `
-        <div class="boss-editor-row" data-boss-editor-row>
-          <label>
-            Название босса
-            <input name="bossName" value="${escapeHtml(boss.name || "")}" placeholder="Например: Маргит, Ужасное Знамение">
-          </label>
-          <label>
-            Точное место
-            <input name="bossLocation" value="${escapeHtml(boss.location || "")}" placeholder="Например: вход в Замок Грозовой Завесы">
-          </label>
-          <label>
-            Награда
-            <input name="bossReward" value="${escapeHtml(boss.reward || "")}" placeholder="Название предмета из трекера">
-          </label>
-          <label>
-            Статус
-            <select name="bossOptional">
-              <option value="false" ${boss.optional === false ? "selected" : ""}>Обязательный</option>
-              <option value="true" ${boss.optional !== false ? "selected" : ""}>Необязательный</option>
-            </select>
-          </label>
-          <label class="wide">
-            Fandom URL
-            <input name="bossLink" value="${escapeHtml(boss.link || "")}" placeholder="https://eldenring.fandom.com/ru/wiki/...">
-          </label>
-          <div class="boss-editor-actions">
-            <button class="secondary" type="button" data-remove-boss>Удалить босса</button>
-          </div>
-        </div>
-      `;
-    }
-
-    function regionEditorFields(region = "", note = "", bosses = []) {
+    function regionEditorFields(region = "", note = "") {
       return `
         <div class="editor-grid">
           <label class="wide">
@@ -10117,12 +9924,6 @@
             <input name="regionName" value="${escapeHtml(region)}" placeholder="Например: Замогилье">
           </label>
           <input name="regionNote" type="hidden" value="${escapeHtml(note)}">
-          <div class="boss-editor" data-boss-editor>
-            ${bosses.map(bossEditorRow).join("")}
-          </div>
-          <div class="actions wide">
-            <button class="secondary" type="button" data-add-boss>Добавить босса</button>
-          </div>
         </div>
       `;
     }
@@ -10174,7 +9975,7 @@
                     <span class="check-mark">✓</span>
                   </button>
                   <button class="step-main" data-select="${escapeHtml(item.id)}">
-                    <span class="item-icon" data-item-icon="${escapeHtml(iconTitle)}" data-manual-icon="${escapeHtml(manualIcon)}" aria-hidden="true"></span>
+                    <span class="item-icon" data-item-icon="${escapeHtml(iconTitle)}" data-manual-icon="${escapeHtml(manualIcon)}" data-fallback-icon="${escapeHtml(itemFallbackIcon(item.category))}" aria-hidden="true"></span>
                     <div class="step-copy">
                       <div class="step-title">
                         <span>${escapeHtml(item.name)}</span>
@@ -10218,7 +10019,7 @@
           <div class="detail-kicker">Редактирование локации</div>
           <h2>${escapeHtml(state.region)}</h2>
           <form class="editor" data-edit-region-form="${escapeHtml(state.region)}">
-            ${regionEditorFields(state.region, regionNote(state.region), regionBosses(state.region))}
+            ${regionEditorFields(state.region, regionNote(state.region))}
             <p class="subtitle">Если изменить название, предметы этой локации останутся привязанными к новому разделу.</p>
             <div class="actions">
               <button class="primary" type="submit">Сохранить локацию</button>
@@ -10300,7 +10101,6 @@
           <div class="detail-kicker">Локация</div>
           <h2>${escapeHtml(state.region)}</h2>
           ${regionNote(state.region) ? `<div class="detail-text">${escapeHtml(regionNote(state.region))}</div>` : ""}
-          ${bossListMarkup(state.region)}
           <div class="mini-progress">
             <div class="section-title">Прогресс локации</div>
             <div class="bar" style="--value: ${regionStats.percent}%"><i></i></div>
@@ -10423,7 +10223,6 @@
       renderEditMode();
       renderRegions();
       renderHeader(currentRegionList);
-      renderMobileBosses();
       renderSearchState();
       renderStatusState();
       renderFilterMeta();
@@ -10600,22 +10399,8 @@
       const fillWikiButton = event.target.closest("[data-fill-wiki]");
       const clearSearchButton = event.target.closest("[data-clear-search]");
       const mobileBackButton = event.target.closest("[data-mobile-back]");
-      const toggleBossesButton = event.target.closest("[data-toggle-bosses]");
-      const addBossButton = event.target.closest("[data-add-boss]");
-      const removeBossButton = event.target.closest("[data-remove-boss]");
 
-      if (!state.editMode && (addItemButton || wikiImportButton || addRegionButton || editRegionButton || resetEditButton || deleteItemButton || fillWikiButton || deleteRegionButton || resetRegionButton || addBossButton || removeBossButton)) {
-        return;
-      }
-
-      if (addBossButton) {
-        const editor = addBossButton.closest("form")?.querySelector("[data-boss-editor]");
-        if (editor) editor.insertAdjacentHTML("beforeend", bossEditorRow());
-        return;
-      }
-
-      if (removeBossButton) {
-        removeBossButton.closest("[data-boss-editor-row]")?.remove();
+      if (!state.editMode && (addItemButton || wikiImportButton || addRegionButton || editRegionButton || resetEditButton || deleteItemButton || fillWikiButton || deleteRegionButton || resetRegionButton)) {
         return;
       }
 
@@ -10641,14 +10426,6 @@
       }
 
       if (!themeSwitcher) closeThemeMenu();
-
-      if (toggleBossesButton) {
-        const region = toggleBossesButton.dataset.toggleBosses;
-        state.collapsedBossRegions[region] = !state.collapsedBossRegions[region];
-        localStorage.setItem("elden-ring-collapsed-boss-regions", JSON.stringify(state.collapsedBossRegions));
-        renderMobileBosses();
-        return;
-      }
 
       if (regionSectionButton) {
         toggleRegionSection(regionSectionButton.dataset.regionSection);

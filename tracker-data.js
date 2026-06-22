@@ -1,9 +1,11 @@
 window.ELDEN_RING_TRACKER_META = {
-  databaseVersion: "2026.06.16-01",
-  updatedAt: "2026-06-16",
-  itemCount: 1066,
-  dlcItemCount: 259,
+  databaseVersion: "2026.06.21-01",
+  updatedAt: "2026-06-21",
+  itemCount: 1011,
+  dlcItemCount: 231,
   changeLog: [
+    "Удалены две устаревшие категории; боссы перенесены в обычную категорию «Боссы» с общим редактированием предметов.",
+    "Боссы преобразованы в обычные элементы категории «Боссы» и перенесены в среднюю колонку трекера.",
     "Глобальная проверка базы: очищены служебные формулировки в маршрутах, уточнены названия Пепла Войны, проверены дубликаты, Fandom-ссылки и мобильная навигация.",
     "Добавлены полные списки полезных предметов для «Вид на Древо Упадка» и «Прибежище Рауха».",
     "Добавлена внутренняя привязка DLC-предметов к подлокациям без расширения левого списка.",
@@ -90,6 +92,7 @@ window.ELDEN_RING_TRACKER_META = {
       "Прах духов",
       "Заклинания",
       "Молитвы",
+      "Боссы",
       "Другое"
   ],
   preferredSources: [
@@ -107,31 +110,31 @@ window.ELDEN_RING_TRACKER_META = {
       "Заметка"
   ],
   expectedRegions: [
-      { name: "Крепость круглого стола", source: "Notion", note: "Хаб, торговцы, обмены воспоминаний.", bosses: [{"name":"Безумный язык Альберих","location":"Нижний зал Крепости круглого стола","reward":"","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%91%D0%B5%D0%B7%D1%83%D0%BC%D0%BD%D1%8B%D0%B9_%D1%8F%D0%B7%D1%8B%D0%BA_%D0%90%D0%BB%D1%8C%D0%B1%D0%B5%D1%80%D0%B8%D1%85"}] },
-      { name: "Замогилье", source: "Notion", note: "Основной стартовый регион, включая Замок Грозовой Завесы.", bosses: [{"name":"Маргит, Ужасное Знамение","location":"Вход в Замок Грозовой Завесы","reward":"","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%9C%D0%B0%D1%80%D0%B3%D0%B8%D1%82%2C_%D0%A3%D0%B6%D0%B0%D1%81%D0%BD%D0%BE%D0%B5_%D0%97%D0%BD%D0%B0%D0%BC%D0%B5%D0%BD%D0%B8%D0%B5"},{"name":"Годрик Сторукий","location":"Замок Грозовой Завесы","reward":"Топор Годрика","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%93%D0%BE%D0%B4%D1%80%D0%B8%D0%BA_%D0%A1%D1%82%D0%BE%D1%80%D1%83%D0%BA%D0%B8%D0%B9"},{"name":"Страж Древа","location":"Дорога к северу от Храма Элле","reward":"","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%A1%D1%82%D1%80%D0%B0%D0%B6_%D0%94%D1%80%D0%B5%D0%B2%D0%B0"},{"name":"Дракон Агиль","location":"Озеро Эгхил","reward":"","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%94%D1%80%D0%B0%D0%BA%D0%BE%D0%BD_%D0%90%D0%B3%D0%B8%D0%BB%D1%8C"}] },
-      { name: "Плачущий полуостров", source: "Fandom needed", note: "Может отсутствовать в твоем Notion.", bosses: [{"name":"Леонин Незаконнорожденный","location":"Замок Морн","reward":"","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%9B%D0%B5%D0%BE%D0%BD%D0%B8%D0%BD_%D0%9D%D0%B5%D0%B7%D0%B0%D0%BA%D0%BE%D0%BD%D0%BD%D0%BE%D1%80%D0%BE%D0%B6%D0%B4%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9"},{"name":"Аватар Древа Эрд","location":"Малое Древо Эрд Плачущего полуострова","reward":"","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%90%D0%B2%D0%B0%D1%82%D0%B0%D1%80_%D0%94%D1%80%D0%B5%D0%B2%D0%B0_%D0%AD%D1%80%D0%B4"},{"name":"Ночной всадник","location":"Южная дорога Плачущего полуострова, ночью","reward":"","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%9D%D0%BE%D1%87%D0%BD%D0%BE%D0%B9_%D0%B2%D1%81%D0%B0%D0%B4%D0%BD%D0%B8%D0%BA"}] },
-      { name: "Озерная Лиурния", source: "Notion", note: "Квесты, академия, Ренни.", bosses: [{"name":"Королева Реннала Полнолунная","location":"Академия Райи Лукарии","reward":"","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%9A%D0%BE%D1%80%D0%BE%D0%BB%D0%B5%D0%B2%D0%B0_%D0%A0%D0%B5%D0%BD%D0%BD%D0%B0%D0%BB%D0%B0_%D0%9F%D0%BE%D0%BB%D0%BD%D0%BE%D0%BB%D1%83%D0%BD%D0%BD%D0%B0%D1%8F"},{"name":"Рыцарь Лоретта","location":"Поместье Карии","reward":"","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%A0%D1%8B%D1%86%D0%B0%D1%80%D1%8C_%D0%9B%D0%BE%D1%80%D0%B5%D1%82%D1%82%D0%B0"},{"name":"Дракон Смараг из блестящих камней","location":"К западу от Академии Райи Лукарии","reward":"","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%94%D1%80%D0%B0%D0%BA%D0%BE%D0%BD_%D0%A1%D0%BC%D0%B0%D1%80%D0%B0%D0%B3_%D0%B8%D0%B7_%D0%B1%D0%BB%D0%B5%D1%81%D1%82%D1%8F%D1%89%D0%B8%D1%85_%D0%BA%D0%B0%D0%BC%D0%BD%D0%B5%D0%B9"},{"name":"Алекто, главарь Чёрных ножей","location":"Узилище главаря на Лунном плато","reward":"","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%90%D0%BB%D0%B5%D0%BA%D1%82%D0%BE%2C_%D0%B3%D0%BB%D0%B0%D0%B2%D0%B0%D1%80%D1%8C_%D0%A7%D1%91%D1%80%D0%BD%D1%8B%D1%85_%D0%BD%D0%BE%D0%B6%D0%B5%D0%B9"}] },
-      { name: "Звездные пустоши", source: "Notion", note: "Caelid / Dragonbarrow.", bosses: [{"name":"Радан Бич Звёзд","location":"Замок Рыжей Гривы / Праздник Радана","reward":"Двуручник Бича Звёзд","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%A0%D0%B0%D0%B4%D0%B0%D0%BD_%D0%91%D0%B8%D1%87_%D0%97%D0%B2%D1%91%D0%B7%D0%B4"},{"name":"Командир О'Нил","location":"Болото Эонии","reward":"","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%9A%D0%BE%D0%BC%D0%B0%D0%BD%D0%B4%D0%B8%D1%80_%D0%9E'%D0%9D%D0%B8%D0%BB"},{"name":"Апостол божественной кожи","location":"Божественная башня Звёздных пустошей","reward":"Двуручник богоубийцы","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%90%D0%BF%D0%BE%D1%81%D1%82%D0%BE%D0%BB_%D0%B1%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D0%BE%D0%B9_%D0%BA%D0%BE%D0%B6%D0%B8"},{"name":"Гниющий Экзикес","location":"Южная дорога Звёздных пустошей","reward":"","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%93%D0%BD%D0%B8%D1%8E%D1%89%D0%B8%D0%B9_%D0%AD%D0%BA%D0%B7%D0%B8%D0%BA%D0%B5%D1%81"}] },
-      { name: "Плато Альтус", source: "Notion", note: "Altus, столица и окружающие пещеры.", bosses: [{"name":"Элемер из Шипов","location":"Сумрачный замок","reward":"Меч палача Марэ","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%AD%D0%BB%D0%B5%D0%BC%D0%B5%D1%80_%D0%B8%D0%B7_%D0%A8%D0%B8%D0%BF%D0%BE%D0%B2"},{"name":"Драконий страж Древа","location":"Северо-восточный вход в Лейнделл","reward":"","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%94%D1%80%D0%B0%D0%BA%D0%BE%D0%BD%D0%B8%D0%B9_%D1%81%D1%82%D1%80%D0%B0%D0%B6_%D0%94%D1%80%D0%B5%D0%B2%D0%B0"},{"name":"Древний герой Замора","location":"Могила героя-святого","reward":"","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%94%D1%80%D0%B5%D0%B2%D0%BD%D0%B8%D0%B9_%D0%B3%D0%B5%D1%80%D0%BE%D0%B9_%D0%97%D0%B0%D0%BC%D0%BE%D1%80%D0%B0"}] },
-      { name: "Вулкан Гельмир", source: "Notion", note: "Вулканово поместье и героические могилы.", bosses: [{"name":"Рикард, богохульный владыка","location":"Вулканово поместье","reward":"Богохульный клинок","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%A0%D0%B8%D0%BA%D0%B0%D1%80%D0%B4%2C_%D0%B1%D0%BE%D0%B3%D0%BE%D1%85%D1%83%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9_%D0%B2%D0%BB%D0%B0%D0%B4%D1%8B%D0%BA%D0%B0"},{"name":"Зрелый зверь Падающей звезды","location":"Вершина Вулкана Гельмир","reward":"","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%97%D1%80%D0%B5%D0%BB%D1%8B%D0%B9_%D0%B7%D0%B2%D0%B5%D1%80%D1%8C_%D0%9F%D0%B0%D0%B4%D0%B0%D1%8E%D1%89%D0%B5%D0%B9_%D0%B7%D0%B2%D0%B5%D0%B7%D0%B4%D1%8B"},{"name":"Аристократ божественной кожи","location":"Храм Игли в Вулкановом поместье","reward":"Сшиватель божественной кожи","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%90%D1%80%D0%B8%D1%81%D1%82%D0%BE%D0%BA%D1%80%D0%B0%D1%82_%D0%B1%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D0%BE%D0%B9_%D0%BA%D0%BE%D0%B6%D0%B8"}] },
-      { name: "Лейнделл, столица королевства", source: "Notion", note: "Столица, Подземелье отчуждения и версия после пепла.", bosses: [{"name":"Годфри, первый повелитель Элдена","location":"Святилище Древа Эрд","reward":"","optional":false,"link":"https://eldenring.fandom.com/ru/wiki/%D0%93%D0%BE%D0%B4%D1%84%D1%80%D0%B8%2C_%D0%BF%D0%B5%D1%80%D0%B2%D1%8B%D0%B9_%D0%BF%D0%BE%D0%B2%D0%B5%D0%BB%D0%B8%D1%82%D0%B5%D0%BB%D1%8C_%D0%AD%D0%BB%D0%B4%D0%B5%D0%BD%D0%B0"},{"name":"Морготт, король знамений","location":"Трон Элдена","reward":"Проклятый меч Морготта","optional":false,"link":"https://eldenring.fandom.com/ru/wiki/%D0%9C%D0%BE%D1%80%D0%B3%D0%BE%D1%82%D1%82%2C_%D0%BA%D0%BE%D1%80%D0%BE%D0%BB%D1%8C_%D0%B7%D0%BD%D0%B0%D0%BC%D0%B5%D0%BD%D0%B8%D0%B9"},{"name":"Эсгар, жрец крови","location":"Катакомбы Лейнделла","reward":"","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%AD%D1%81%D0%B3%D0%B0%D1%80%2C_%D0%B6%D1%80%D0%B5%D1%86_%D0%BA%D1%80%D0%BE%D0%B2%D0%B8"}] },
-      { name: "Подземелье отчуждения", source: "Fandom", note: "Канализация под Лейнделлом, Мог Знамение, Поедатель Отбросов и путь к Трём Пальцам.", bosses: [{"name":"Мог, Знамение","location":"Собор Отверженных","reward":"","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%9C%D0%BE%D0%B3%2C_%D0%97%D0%BD%D0%B0%D0%BC%D0%B5%D0%BD%D0%B8%D0%B5"}] },
-      { name: "Вершины великанов", source: "Notion", note: "Поздняя основная игра.", bosses: [{"name":"Огненный великан","location":"Кузница великанов","reward":"Рыжая коса великана","optional":false,"link":"https://eldenring.fandom.com/ru/wiki/%D0%9E%D0%B3%D0%BD%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%B2%D0%B5%D0%BB%D0%B8%D0%BA%D0%B0%D0%BD"},{"name":"Командир Найлл","location":"Замок Сол","reward":"","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%9A%D0%BE%D0%BC%D0%B0%D0%BD%D0%B4%D0%B8%D1%80_%D0%9D%D0%B0%D0%B9%D0%BB%D0%BB"},{"name":"Борелис Леденящий Туман","location":"Замёрзшее озеро","reward":"","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%91%D0%BE%D1%80%D0%B5%D0%BB%D0%B8%D1%81_%D0%9B%D0%B5%D0%B4%D0%B5%D0%BD%D1%8F%D1%89%D0%B8%D0%B9_%D0%A2%D1%83%D0%BC%D0%B0%D0%BD"}] },
-      { name: "Священное заснеженное поле", source: "Notion", note: "Consecrated Snowfield.", bosses: [{"name":"Астель, Звёзды Тьмы","location":"Туннель Йеллоу Аникс","reward":"","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%90%D1%81%D1%82%D0%B5%D0%BB%D1%8C%2C_%D0%97%D0%B2%D1%91%D0%B7%D0%B4%D1%8B_%D0%A2%D1%8C%D0%BC%D1%8B"},{"name":"Великий змей Теодорикс","location":"Замёрзшая река у пещеры Покинутых","reward":"","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%92%D0%B5%D0%BB%D0%B8%D0%BA%D0%B8%D0%B9_%D0%B7%D0%BC%D0%B5%D0%B9_%D0%A2%D0%B5%D0%BE%D0%B4%D0%BE%D1%80%D0%B8%D0%BA%D1%81"},{"name":"Гнилостный аватар","location":"Малое Древо Эрд Священного заснеженного поля","reward":"","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%93%D0%BD%D0%B8%D0%BB%D0%BE%D1%81%D1%82%D0%BD%D1%8B%D0%B9_%D0%B0%D0%B2%D0%B0%D1%82%D0%B0%D1%80"}] },
-      { name: "Разрушающийся Фарум-Азула", source: "Fandom needed", note: "Нужно добавить отдельным пакетом.", bosses: [{"name":"Двое из божественной кожи","location":"Храм дракона","reward":"","optional":false,"link":"https://eldenring.fandom.com/ru/wiki/%D0%94%D0%B2%D0%BE%D0%B5_%D0%B8%D0%B7_%D0%B1%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D0%BE%D0%B9_%D0%BA%D0%BE%D0%B6%D0%B8"},{"name":"Маликет Чёрный Клинок","location":"Великий мост","reward":"Чёрный клинок Маликета","optional":false,"link":"https://eldenring.fandom.com/ru/wiki/%D0%9C%D0%B0%D0%BB%D0%B8%D0%BA%D0%B5%D1%82_%D0%A7%D1%91%D1%80%D0%BD%D1%8B%D0%B9_%D0%9A%D0%BB%D0%B8%D0%BD%D0%BE%D0%BA"},{"name":"Повелитель драконов Пласидусакс","location":"Сердце бури Фарум-Азула","reward":"Каменный меч короля драконов","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%9F%D0%BE%D0%B2%D0%B5%D0%BB%D0%B8%D1%82%D0%B5%D0%BB%D1%8C_%D0%B4%D1%80%D0%B0%D0%BA%D0%BE%D0%BD%D0%BE%D0%B2_%D0%9F%D0%BB%D0%B0%D1%81%D0%B8%D0%B4%D1%83%D1%81%D0%B0%D0%BA%D1%81"}] },
-      { name: "Река Сиофра", source: "Notion", note: "Подземный регион, Нокрон и Дворец Могвинов.", bosses: [{"name":"Дух предка","location":"Земли рогатого народа у реки Сиофра","reward":"","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%94%D1%83%D1%85_%D0%BF%D1%80%D0%B5%D0%B4%D0%BA%D0%B0"},{"name":"Дух величавого предка","location":"Нокрон, вечный город","reward":"","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%94%D1%83%D1%85_%D0%B2%D0%B5%D0%BB%D0%B8%D1%87%D0%B0%D0%B2%D0%BE%D0%B3%D0%BE_%D0%BF%D1%80%D0%B5%D0%B4%D0%BA%D0%B0"},{"name":"Отважные горгульи","location":"Акведук Сиофры","reward":"Двуручник горгулий","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%9E%D1%82%D0%B2%D0%B0%D0%B6%D0%BD%D1%8B%D0%B5_%D0%B3%D0%BE%D1%80%D0%B3%D1%83%D0%BB%D1%8C%D0%B8"},{"name":"Мог Повелитель Крови","location":"Дворец Могвинов","reward":"Священное копьё Могвина","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%9C%D0%BE%D0%B3_%D0%9F%D0%BE%D0%B2%D0%B5%D0%BB%D0%B8%D1%82%D0%B5%D0%BB%D1%8C_%D0%9A%D1%80%D0%BE%D0%B2%D0%B8"}] },
-      { name: "Река Ансель", source: "Fandom needed", note: "Река Ансель, основной поток и Озеро гнили.", bosses: [{"name":"Солдат-драконид Нокстеллы","location":"Река Ансель","reward":"","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%A1%D0%BE%D0%BB%D0%B4%D0%B0%D1%82-%D0%B4%D1%80%D0%B0%D0%BA%D0%BE%D0%BD%D0%B8%D0%B4_%D0%9D%D0%BE%D0%BA%D1%81%D1%82%D0%B5%D0%BB%D0%BB%D1%8B"},{"name":"Солдат-драконид","location":"Озеро гнили","reward":"Меч из драконьей чешуи","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%A1%D0%BE%D0%BB%D0%B4%D0%B0%D1%82-%D0%B4%D1%80%D0%B0%D0%BA%D0%BE%D0%BD%D0%B8%D0%B4"},{"name":"Астель, Рождённый Бездной","location":"За Великим клуатром","reward":"","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%90%D1%81%D1%82%D0%B5%D0%BB%D1%8C%2C_%D0%A0%D0%BE%D0%B6%D0%B4%D1%91%D0%BD%D0%BD%D1%8B%D0%B9_%D0%91%D0%B5%D0%B7%D0%B4%D0%BD%D0%BE%D0%B9"}] },
-      { name: "Низовье глубокого корня", source: "Notion", note: "Deeproot Depths.", bosses: [{"name":"Защитники Фии","location":"У корней Древа Эрд","reward":"","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%97%D0%B0%D1%89%D0%B8%D1%82%D0%BD%D0%B8%D0%BA%D0%B8_%D0%A4%D0%B8%D0%B8"},{"name":"Дракон-лич Фортисакс","location":"Сон Фии","reward":"","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%94%D1%80%D0%B0%D0%BA%D0%BE%D0%BD-%D0%BB%D0%B8%D1%87_%D0%A4%D0%BE%D1%80%D1%82%D0%B8%D1%81%D0%B0%D0%BA%D1%81"},{"name":"Рыцарь Горнила Силурия","location":"Низовье глубокого корня","reward":"Дерево Силурии","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%A0%D1%8B%D1%86%D0%B0%D1%80%D1%8C_%D0%93%D0%BE%D1%80%D0%BD%D0%B8%D0%BB%D0%B0_%D0%A1%D0%B8%D0%BB%D1%83%D1%80%D0%B8%D1%8F"}] },
-      { name: "Святое древо Микеллы", source: "Notion", note: "Haligtree / Elphael.", bosses: [{"name":"Лоретта, рыцарь Святого Древа","location":"Святое древо Микеллы","reward":"Боевой серп Лоретты","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%9B%D0%BE%D1%80%D0%B5%D1%82%D1%82%D0%B0%2C_%D1%80%D1%8B%D1%86%D0%B0%D1%80%D1%8C_%D0%A1%D0%B2%D1%8F%D1%82%D0%BE%D0%B3%D0%BE_%D0%94%D1%80%D0%B5%D0%B2%D0%B0"},{"name":"Маления, Клинок Микеллы","location":"Эльфаэль, опора Святого Древа","reward":"Длань Малении","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%9C%D0%B0%D0%BB%D0%B5%D0%BD%D0%B8%D1%8F%2C_%D0%9A%D0%BB%D0%B8%D0%BD%D0%BE%D0%BA_%D0%9C%D0%B8%D0%BA%D0%B5%D0%BB%D0%BB%D1%8B"}] },
-      { name: "Равнина надгробий", source: "Notion", note: "DLC стартовый регион, Белурат и Замок Энсис.", bosses: [{"name":"Божественный зверь танцующий лев","location":"Белурат, поселение у башни","reward":"","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%91%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%B7%D0%B2%D0%B5%D1%80%D1%8C_%D1%82%D0%B0%D0%BD%D1%86%D1%83%D1%8E%D1%89%D0%B8%D0%B9_%D0%BB%D0%B5%D0%B2"},{"name":"Реллана, рыцарь Двойной Луны","location":"Замок Энсис","reward":"","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%A0%D0%B5%D0%BB%D0%BB%D0%B0%D0%BD%D0%B0%2C_%D1%80%D1%8B%D1%86%D0%B0%D1%80%D1%8C_%D0%94%D0%B2%D0%BE%D0%B9%D0%BD%D0%BE%D0%B9_%D0%9B%D1%83%D0%BD%D1%8B"},{"name":"Рыцарь Чёрной тюрьмы","location":"Западный безымянный мавзолей","reward":"","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%A0%D1%8B%D1%86%D0%B0%D1%80%D1%8C_%D0%A7%D1%91%D1%80%D0%BD%D0%BE%D0%B9_%D1%82%D1%8E%D1%80%D1%8C%D0%BC%D1%8B"}] },
-      { name: "Окрестности башни", source: "Fandom", note: "DLC башенная зона: Энир-Илим и финальные награды.", bosses: [{"name":"Рыцарь Игольщица Леда и союзники","location":"Энир-Илим","reward":"","optional":false,"link":"https://eldenring.fandom.com/ru/wiki/%D0%A0%D1%8B%D1%86%D0%B0%D1%80%D1%8C_%D0%98%D0%B3%D0%BE%D0%BB%D1%8C%D1%89%D0%B8%D1%86%D0%B0_%D0%9B%D0%B5%D0%B4%D0%B0_%D0%B8_%D1%81%D0%BE%D1%8E%D0%B7%D0%BD%D0%B8%D0%BA%D0%B8"},{"name":"Радан, обещанный супруг","location":"Врата Божественности","reward":"","optional":false,"link":"https://eldenring.fandom.com/ru/wiki/%D0%A0%D0%B0%D0%B4%D0%B0%D0%BD%2C_%D0%BE%D0%B1%D0%B5%D1%89%D0%B0%D0%BD%D0%BD%D1%8B%D0%B9_%D1%81%D1%83%D0%BF%D1%80%D1%83%D0%B3"}] },
-      { name: "Теневой Альтус", source: "Notion", note: "DLC центральный регион, включая Пристанище Теней.", bosses: [{"name":"Мессмер Колосажатель","location":"Пристанище Теней","reward":"","optional":false,"link":"https://eldenring.fandom.com/ru/wiki/%D0%9C%D0%B5%D1%81%D1%81%D0%BC%D0%B5%D1%80_%D0%9A%D0%BE%D0%BB%D0%BE%D1%81%D0%B0%D0%B6%D0%B0%D1%82%D0%B5%D0%BB%D1%8C"},{"name":"Золотой гиппопотам","location":"Главные ворота Пристанища Теней","reward":"","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%97%D0%BE%D0%BB%D0%BE%D1%82%D0%BE%D0%B9_%D0%B3%D0%B8%D0%BF%D0%BF%D0%BE%D0%BF%D0%BE%D1%82%D0%B0%D0%BC"},{"name":"Метир, Матерь Пальцев","location":"Руины обители пальцев Миира","reward":"","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%9C%D0%B5%D1%82%D0%B8%D1%80%2C_%D0%9C%D0%B0%D1%82%D0%B5%D1%80%D1%8C_%D0%9F%D0%B0%D0%BB%D1%8C%D1%86%D0%B5%D0%B2"}] },
-      { name: "Вид на Древо Упадка", source: "Fandom", note: "DLC-зона за Пристанищем Теней: Деревня шаманов и Руины обители пальцев Део.", bosses: [{"name":"Аватар Древа Упадка","location":"Основание Древа Упадка","reward":"","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%90%D0%B2%D0%B0%D1%82%D0%B0%D1%80_%D0%94%D1%80%D0%B5%D0%B2%D0%B0_%D0%A3%D0%BF%D0%B0%D0%B4%D0%BA%D0%B0"},{"name":"Командир Гай","location":"К северу от Пристанища Теней","reward":"","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%9A%D0%BE%D0%BC%D0%B0%D0%BD%D0%B4%D0%B8%D1%80_%D0%93%D0%B0%D0%B9"}] },
-      { name: "Лазурное побережье", source: "Notion", note: "DLC южный регион.", bosses: [{"name":"Рыцарь Гниения","location":"Разлом в каменном саркофаге","reward":"","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%A0%D1%8B%D1%86%D0%B0%D1%80%D1%8C_%D0%93%D0%BD%D0%B8%D0%B5%D0%BD%D0%B8%D1%8F"},{"name":"Королева полулюдей Маригга","location":"Лазурное побережье","reward":"","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%9A%D0%BE%D1%80%D0%BE%D0%BB%D0%B5%D0%B2%D0%B0_%D0%BF%D0%BE%D0%BB%D1%83%D0%BB%D1%8E%D0%B4%D0%B5%D0%B9_%D0%9C%D0%B0%D1%80%D0%B8%D0%B3%D0%B3%D0%B0"},{"name":"Призрачный дракон пламени","location":"Лазурное побережье","reward":"","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%9F%D1%80%D0%B8%D0%B7%D1%80%D0%B0%D1%87%D0%BD%D1%8B%D0%B9_%D0%B4%D1%80%D0%B0%D0%BA%D0%BE%D0%BD_%D0%BF%D0%BB%D0%B0%D0%BC%D0%B5%D0%BD%D0%B8"}] },
-      { name: "Зубатая гора", source: "Notion", note: "DLC Jagged Peak.", bosses: [{"name":"Бейл Ужасный","location":"Вершина Зубатой горы","reward":"","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%91%D0%B5%D0%B9%D0%BB_%D0%A3%D0%B6%D0%B0%D1%81%D0%BD%D1%8B%D0%B9"},{"name":"Древний дракон Сенессакс","location":"Зубатая гора","reward":"","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%94%D1%80%D0%B5%D0%B2%D0%BD%D0%B8%D0%B9_%D0%B4%D1%80%D0%B0%D0%BA%D0%BE%D0%BD_%D0%A1%D0%B5%D0%BD%D0%B5%D1%81%D1%81%D0%B0%D0%BA%D1%81"},{"name":"Дракон Зубатой горы","location":"Склоны Зубатой горы","reward":"","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%94%D1%80%D0%B0%D0%BA%D0%BE%D0%BD_%D0%97%D1%83%D0%B1%D0%B0%D1%82%D0%BE%D0%B9_%D0%B3%D0%BE%D1%80%D1%8B"}] },
-      { name: "Прибежище Рауха", source: "Fandom", note: "DLC Rauh Base: руины города-храма, Разрушенная кузница Тейлю и катакомбы под Скорпионовой рекой.", bosses: [{"name":"Рыцарь смерти","location":"Катакомбы под Скорпионовой рекой","reward":"","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%A0%D1%8B%D1%86%D0%B0%D1%80%D1%8C_%D1%81%D0%BC%D0%B5%D1%80%D1%82%D0%B8"},{"name":"Ругалия, великий красный медведь","location":"Лесная часть Прибежища Рауха","reward":"","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%A0%D1%83%D0%B3%D0%B0%D0%BB%D0%B8%D1%8F%2C_%D0%B2%D0%B5%D0%BB%D0%B8%D0%BA%D0%B8%D0%B9_%D0%BA%D1%80%D0%B0%D1%81%D0%BD%D1%8B%D0%B9_%D0%BC%D0%B5%D0%B4%D0%B2%D0%B5%D0%B4%D1%8C"}] },
-      { name: "Руины древней обители Рауха", source: "Notion", note: "DLC Rauh Base и Ancient Ruins of Rauh.", bosses: [{"name":"Ромина, святая цветочных бутонов","location":"Церковь цветочных бутонов","reward":"","optional":false,"link":"https://eldenring.fandom.com/ru/wiki/%D0%A0%D0%BE%D0%BC%D0%B8%D0%BD%D0%B0%2C_%D1%81%D0%B2%D1%8F%D1%82%D0%B0%D1%8F_%D1%86%D0%B2%D0%B5%D1%82%D0%BE%D1%87%D0%BD%D1%8B%D1%85_%D0%B1%D1%83%D1%82%D0%BE%D0%BD%D0%BE%D0%B2"},{"name":"Птица смерти","location":"Руины древней обители Рауха","reward":"","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%9F%D1%82%D0%B8%D1%86%D0%B0_%D1%81%D0%BC%D0%B5%D1%80%D1%82%D0%B8"}] },
-      { name: "Лес бездны", source: "Fandom needed", note: "DLC Лес бездны.", bosses: [{"name":"Мидра, владыка яростного пламени","location":"Поместье Мидры","reward":"","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%9C%D0%B8%D0%B4%D1%80%D0%B0%2C_%D0%B2%D0%BB%D0%B0%D0%B4%D1%8B%D0%BA%D0%B0_%D1%8F%D1%80%D0%BE%D1%81%D1%82%D0%BD%D0%BE%D0%B3%D0%BE_%D0%BF%D0%BB%D0%B0%D0%BC%D0%B5%D0%BD%D0%B8"},{"name":"Йори, старейшина инквизиторов","location":"Тёмные катакомбы","reward":"","optional":true,"link":"https://eldenring.fandom.com/ru/wiki/%D0%99%D0%BE%D1%80%D0%B8%2C_%D1%81%D1%82%D0%B0%D1%80%D0%B5%D0%B9%D1%88%D0%B8%D0%BD%D0%B0_%D0%B8%D0%BD%D0%BA%D0%B2%D0%B8%D0%B7%D0%B8%D1%82%D0%BE%D1%80%D0%BE%D0%B2"}] }
+      { name: "Крепость круглого стола", source: "Notion", note: "Хаб, торговцы, обмены воспоминаний." },
+      { name: "Замогилье", source: "Notion", note: "Основной стартовый регион, включая Замок Грозовой Завесы." },
+      { name: "Плачущий полуостров", source: "Fandom needed", note: "Может отсутствовать в твоем Notion." },
+      { name: "Озерная Лиурния", source: "Notion", note: "Квесты, академия, Ренни." },
+      { name: "Звездные пустоши", source: "Notion", note: "Caelid / Dragonbarrow." },
+      { name: "Плато Альтус", source: "Notion", note: "Altus, столица и окружающие пещеры." },
+      { name: "Вулкан Гельмир", source: "Notion", note: "Вулканово поместье и героические могилы." },
+      { name: "Лейнделл, столица королевства", source: "Notion", note: "Столица, Подземелье отчуждения и версия после пепла." },
+      { name: "Подземелье отчуждения", source: "Fandom", note: "Канализация под Лейнделлом, Мог Знамение, Поедатель Отбросов и путь к Трём Пальцам." },
+      { name: "Вершины великанов", source: "Notion", note: "Поздняя основная игра." },
+      { name: "Священное заснеженное поле", source: "Notion", note: "Consecrated Snowfield." },
+      { name: "Разрушающийся Фарум-Азула", source: "Fandom needed", note: "Нужно добавить отдельным пакетом." },
+      { name: "Река Сиофра", source: "Notion", note: "Подземный регион, Нокрон и Дворец Могвинов." },
+      { name: "Река Ансель", source: "Fandom needed", note: "Река Ансель, основной поток и Озеро гнили." },
+      { name: "Низовье глубокого корня", source: "Notion", note: "Deeproot Depths." },
+      { name: "Святое древо Микеллы", source: "Notion", note: "Haligtree / Elphael." },
+      { name: "Равнина надгробий", source: "Notion", note: "DLC стартовый регион, Белурат и Замок Энсис." },
+      { name: "Окрестности башни", source: "Fandom", note: "DLC башенная зона: Энир-Илим и финальные награды." },
+      { name: "Теневой Альтус", source: "Notion", note: "DLC центральный регион, включая Пристанище Теней." },
+      { name: "Вид на Древо Упадка", source: "Fandom", note: "DLC-зона за Пристанищем Теней: Деревня шаманов и Руины обители пальцев Део." },
+      { name: "Лазурное побережье", source: "Notion", note: "DLC южный регион." },
+      { name: "Зубатая гора", source: "Notion", note: "DLC Jagged Peak." },
+      { name: "Прибежище Рауха", source: "Fandom", note: "DLC Rauh Base: руины города-храма, Разрушенная кузница Тейлю и катакомбы под Скорпионовой рекой." },
+      { name: "Руины древней обители Рауха", source: "Notion", note: "DLC Rauh Base и Ancient Ruins of Rauh." },
+      { name: "Лес бездны", source: "Fandom needed", note: "DLC Лес бездны." }
   ],
   parentRegions: {
       "Грязная пещера": "Замогилье",
@@ -1174,6 +1177,696 @@ window.ELDEN_RING_TRACKER_ITEMS = [
           { label: "Карта", url: "https://mapgenie.io/elden-ring/maps/the-lands-between?locationIds=168999" },
           { label: "Fandom", url: "https://eldenring.fandom.com/ru/wiki/%D0%91%D0%BE%D0%B5%D0%B2%D0%BE%D0%B9_%D1%81%D0%B5%D1%80%D0%BF_%D0%9B%D0%BE%D1%80%D0%B5%D1%82%D1%82%D1%8B" }
         ]
+      },
+      {
+        id: "boss-01-01",
+        name: "Безумный язык Альберих",
+        category: "Боссы",
+        region: "Крепость круглого стола",
+        location: "Нижний зал Крепости круглого стола",
+        source: "Босс",
+        note: "Необязательный босс.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%91%D0%B5%D0%B7%D1%83%D0%BC%D0%BD%D1%8B%D0%B9_%D1%8F%D0%B7%D1%8B%D0%BA_%D0%90%D0%BB%D1%8C%D0%B1%D0%B5%D1%80%D0%B8%D1%85"}]
+      },
+      {
+        id: "boss-02-01",
+        name: "Маргит, Ужасное Знамение",
+        category: "Боссы",
+        region: "Замогилье",
+        location: "Вход в Замок Грозовой Завесы",
+        source: "Босс",
+        note: "Необязательный босс.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%9C%D0%B0%D1%80%D0%B3%D0%B8%D1%82%2C_%D0%A3%D0%B6%D0%B0%D1%81%D0%BD%D0%BE%D0%B5_%D0%97%D0%BD%D0%B0%D0%BC%D0%B5%D0%BD%D0%B8%D0%B5"}]
+      },
+      {
+        id: "boss-02-02",
+        name: "Годрик Сторукий",
+        category: "Боссы",
+        region: "Замогилье",
+        location: "Замок Грозовой Завесы",
+        source: "Босс",
+        note: "Необязательный босс. Награда: Топор Годрика.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%93%D0%BE%D0%B4%D1%80%D0%B8%D0%BA_%D0%A1%D1%82%D0%BE%D1%80%D1%83%D0%BA%D0%B8%D0%B9"}]
+      },
+      {
+        id: "boss-02-03",
+        name: "Страж Древа",
+        category: "Боссы",
+        region: "Замогилье",
+        location: "Дорога к северу от Храма Элле",
+        source: "Босс",
+        note: "Необязательный босс.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%A1%D1%82%D1%80%D0%B0%D0%B6_%D0%94%D1%80%D0%B5%D0%B2%D0%B0"}]
+      },
+      {
+        id: "boss-02-04",
+        name: "Дракон Агиль",
+        category: "Боссы",
+        region: "Замогилье",
+        location: "Озеро Эгхил",
+        source: "Босс",
+        note: "Необязательный босс.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%94%D1%80%D0%B0%D0%BA%D0%BE%D0%BD_%D0%90%D0%B3%D0%B8%D0%BB%D1%8C"}]
+      },
+      {
+        id: "boss-03-01",
+        name: "Леонин Незаконнорожденный",
+        category: "Боссы",
+        region: "Плачущий полуостров",
+        location: "Замок Морн",
+        source: "Босс",
+        note: "Необязательный босс.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%9B%D0%B5%D0%BE%D0%BD%D0%B8%D0%BD_%D0%9D%D0%B5%D0%B7%D0%B0%D0%BA%D0%BE%D0%BD%D0%BD%D0%BE%D1%80%D0%BE%D0%B6%D0%B4%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9"}]
+      },
+      {
+        id: "boss-03-02",
+        name: "Аватар Древа Эрд",
+        category: "Боссы",
+        region: "Плачущий полуостров",
+        location: "Малое Древо Эрд Плачущего полуострова",
+        source: "Босс",
+        note: "Необязательный босс.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%90%D0%B2%D0%B0%D1%82%D0%B0%D1%80_%D0%94%D1%80%D0%B5%D0%B2%D0%B0_%D0%AD%D1%80%D0%B4"}]
+      },
+      {
+        id: "boss-03-03",
+        name: "Ночной всадник",
+        category: "Боссы",
+        region: "Плачущий полуостров",
+        location: "Южная дорога Плачущего полуострова, ночью",
+        source: "Босс",
+        note: "Необязательный босс.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%9D%D0%BE%D1%87%D0%BD%D0%BE%D0%B9_%D0%B2%D1%81%D0%B0%D0%B4%D0%BD%D0%B8%D0%BA"}]
+      },
+      {
+        id: "boss-04-01",
+        name: "Королева Реннала Полнолунная",
+        category: "Боссы",
+        region: "Озерная Лиурния",
+        location: "Академия Райи Лукарии",
+        source: "Босс",
+        note: "Необязательный босс.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%9A%D0%BE%D1%80%D0%BE%D0%BB%D0%B5%D0%B2%D0%B0_%D0%A0%D0%B5%D0%BD%D0%BD%D0%B0%D0%BB%D0%B0_%D0%9F%D0%BE%D0%BB%D0%BD%D0%BE%D0%BB%D1%83%D0%BD%D0%BD%D0%B0%D1%8F"}]
+      },
+      {
+        id: "boss-04-02",
+        name: "Рыцарь Лоретта",
+        category: "Боссы",
+        region: "Озерная Лиурния",
+        location: "Поместье Карии",
+        source: "Босс",
+        note: "Необязательный босс.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%A0%D1%8B%D1%86%D0%B0%D1%80%D1%8C_%D0%9B%D0%BE%D1%80%D0%B5%D1%82%D1%82%D0%B0"}]
+      },
+      {
+        id: "boss-04-03",
+        name: "Дракон Смараг из блестящих камней",
+        category: "Боссы",
+        region: "Озерная Лиурния",
+        location: "К западу от Академии Райи Лукарии",
+        source: "Босс",
+        note: "Необязательный босс.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%94%D1%80%D0%B0%D0%BA%D0%BE%D0%BD_%D0%A1%D0%BC%D0%B0%D1%80%D0%B0%D0%B3_%D0%B8%D0%B7_%D0%B1%D0%BB%D0%B5%D1%81%D1%82%D1%8F%D1%89%D0%B8%D1%85_%D0%BA%D0%B0%D0%BC%D0%BD%D0%B5%D0%B9"}]
+      },
+      {
+        id: "boss-04-04",
+        name: "Алекто, главарь Чёрных ножей",
+        category: "Боссы",
+        region: "Озерная Лиурния",
+        location: "Узилище главаря на Лунном плато",
+        source: "Босс",
+        note: "Необязательный босс.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%90%D0%BB%D0%B5%D0%BA%D1%82%D0%BE%2C_%D0%B3%D0%BB%D0%B0%D0%B2%D0%B0%D1%80%D1%8C_%D0%A7%D1%91%D1%80%D0%BD%D1%8B%D1%85_%D0%BD%D0%BE%D0%B6%D0%B5%D0%B9"}]
+      },
+      {
+        id: "boss-05-01",
+        name: "Радан Бич Звёзд",
+        category: "Боссы",
+        region: "Звездные пустоши",
+        location: "Замок Рыжей Гривы / Праздник Радана",
+        source: "Босс",
+        note: "Необязательный босс. Награда: Двуручник Бича Звёзд.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%A0%D0%B0%D0%B4%D0%B0%D0%BD_%D0%91%D0%B8%D1%87_%D0%97%D0%B2%D1%91%D0%B7%D0%B4"}]
+      },
+      {
+        id: "boss-05-02",
+        name: "Командир О'Нил",
+        category: "Боссы",
+        region: "Звездные пустоши",
+        location: "Болото Эонии",
+        source: "Босс",
+        note: "Необязательный босс.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%9A%D0%BE%D0%BC%D0%B0%D0%BD%D0%B4%D0%B8%D1%80_%D0%9E'%D0%9D%D0%B8%D0%BB"}]
+      },
+      {
+        id: "boss-05-03",
+        name: "Апостол божественной кожи",
+        category: "Боссы",
+        region: "Звездные пустоши",
+        location: "Божественная башня Звёздных пустошей",
+        source: "Босс",
+        note: "Необязательный босс. Награда: Двуручник богоубийцы.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%90%D0%BF%D0%BE%D1%81%D1%82%D0%BE%D0%BB_%D0%B1%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D0%BE%D0%B9_%D0%BA%D0%BE%D0%B6%D0%B8"}]
+      },
+      {
+        id: "boss-05-04",
+        name: "Гниющий Экзикес",
+        category: "Боссы",
+        region: "Звездные пустоши",
+        location: "Южная дорога Звёздных пустошей",
+        source: "Босс",
+        note: "Необязательный босс.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%93%D0%BD%D0%B8%D1%8E%D1%89%D0%B8%D0%B9_%D0%AD%D0%BA%D0%B7%D0%B8%D0%BA%D0%B5%D1%81"}]
+      },
+      {
+        id: "boss-06-01",
+        name: "Элемер из Шипов",
+        category: "Боссы",
+        region: "Плато Альтус",
+        location: "Сумрачный замок",
+        source: "Босс",
+        note: "Необязательный босс. Награда: Меч палача Марэ.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%AD%D0%BB%D0%B5%D0%BC%D0%B5%D1%80_%D0%B8%D0%B7_%D0%A8%D0%B8%D0%BF%D0%BE%D0%B2"}]
+      },
+      {
+        id: "boss-06-02",
+        name: "Драконий страж Древа",
+        category: "Боссы",
+        region: "Плато Альтус",
+        location: "Северо-восточный вход в Лейнделл",
+        source: "Босс",
+        note: "Необязательный босс.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%94%D1%80%D0%B0%D0%BA%D0%BE%D0%BD%D0%B8%D0%B9_%D1%81%D1%82%D1%80%D0%B0%D0%B6_%D0%94%D1%80%D0%B5%D0%B2%D0%B0"}]
+      },
+      {
+        id: "boss-06-03",
+        name: "Древний герой Замора",
+        category: "Боссы",
+        region: "Плато Альтус",
+        location: "Могила героя-святого",
+        source: "Босс",
+        note: "Необязательный босс.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%94%D1%80%D0%B5%D0%B2%D0%BD%D0%B8%D0%B9_%D0%B3%D0%B5%D1%80%D0%BE%D0%B9_%D0%97%D0%B0%D0%BC%D0%BE%D1%80%D0%B0"}]
+      },
+      {
+        id: "boss-07-01",
+        name: "Рикард, богохульный владыка",
+        category: "Боссы",
+        region: "Вулкан Гельмир",
+        location: "Вулканово поместье",
+        source: "Босс",
+        note: "Необязательный босс. Награда: Богохульный клинок.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%A0%D0%B8%D0%BA%D0%B0%D1%80%D0%B4%2C_%D0%B1%D0%BE%D0%B3%D0%BE%D1%85%D1%83%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9_%D0%B2%D0%BB%D0%B0%D0%B4%D1%8B%D0%BA%D0%B0"}]
+      },
+      {
+        id: "boss-07-02",
+        name: "Зрелый зверь Падающей звезды",
+        category: "Боссы",
+        region: "Вулкан Гельмир",
+        location: "Вершина Вулкана Гельмир",
+        source: "Босс",
+        note: "Необязательный босс.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%97%D1%80%D0%B5%D0%BB%D1%8B%D0%B9_%D0%B7%D0%B2%D0%B5%D1%80%D1%8C_%D0%9F%D0%B0%D0%B4%D0%B0%D1%8E%D1%89%D0%B5%D0%B9_%D0%B7%D0%B2%D0%B5%D0%B7%D0%B4%D1%8B"}]
+      },
+      {
+        id: "boss-07-03",
+        name: "Аристократ божественной кожи",
+        category: "Боссы",
+        region: "Вулкан Гельмир",
+        location: "Храм Игли в Вулкановом поместье",
+        source: "Босс",
+        note: "Необязательный босс. Награда: Сшиватель божественной кожи.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%90%D1%80%D0%B8%D1%81%D1%82%D0%BE%D0%BA%D1%80%D0%B0%D1%82_%D0%B1%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D0%BE%D0%B9_%D0%BA%D0%BE%D0%B6%D0%B8"}]
+      },
+      {
+        id: "boss-08-01",
+        name: "Годфри, первый повелитель Элдена",
+        category: "Боссы",
+        region: "Лейнделл, столица королевства",
+        location: "Святилище Древа Эрд",
+        source: "Босс",
+        note: "Обязательный босс.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%93%D0%BE%D0%B4%D1%84%D1%80%D0%B8%2C_%D0%BF%D0%B5%D1%80%D0%B2%D1%8B%D0%B9_%D0%BF%D0%BE%D0%B2%D0%B5%D0%BB%D0%B8%D1%82%D0%B5%D0%BB%D1%8C_%D0%AD%D0%BB%D0%B4%D0%B5%D0%BD%D0%B0"}]
+      },
+      {
+        id: "boss-08-02",
+        name: "Морготт, король знамений",
+        category: "Боссы",
+        region: "Лейнделл, столица королевства",
+        location: "Трон Элдена",
+        source: "Босс",
+        note: "Обязательный босс. Награда: Проклятый меч Морготта.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%9C%D0%BE%D1%80%D0%B3%D0%BE%D1%82%D1%82%2C_%D0%BA%D0%BE%D1%80%D0%BE%D0%BB%D1%8C_%D0%B7%D0%BD%D0%B0%D0%BC%D0%B5%D0%BD%D0%B8%D0%B9"}]
+      },
+      {
+        id: "boss-08-03",
+        name: "Эсгар, жрец крови",
+        category: "Боссы",
+        region: "Лейнделл, столица королевства",
+        location: "Катакомбы Лейнделла",
+        source: "Босс",
+        note: "Необязательный босс.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%AD%D1%81%D0%B3%D0%B0%D1%80%2C_%D0%B6%D1%80%D0%B5%D1%86_%D0%BA%D1%80%D0%BE%D0%B2%D0%B8"}]
+      },
+      {
+        id: "boss-09-01",
+        name: "Мог, Знамение",
+        category: "Боссы",
+        region: "Подземелье отчуждения",
+        location: "Собор Отверженных",
+        source: "Босс",
+        note: "Необязательный босс.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%9C%D0%BE%D0%B3%2C_%D0%97%D0%BD%D0%B0%D0%BC%D0%B5%D0%BD%D0%B8%D0%B5"}]
+      },
+      {
+        id: "boss-10-01",
+        name: "Огненный великан",
+        category: "Боссы",
+        region: "Вершины великанов",
+        location: "Кузница великанов",
+        source: "Босс",
+        note: "Обязательный босс. Награда: Рыжая коса великана.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%9E%D0%B3%D0%BD%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%B2%D0%B5%D0%BB%D0%B8%D0%BA%D0%B0%D0%BD"}]
+      },
+      {
+        id: "boss-10-02",
+        name: "Командир Найлл",
+        category: "Боссы",
+        region: "Вершины великанов",
+        location: "Замок Сол",
+        source: "Босс",
+        note: "Необязательный босс.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%9A%D0%BE%D0%BC%D0%B0%D0%BD%D0%B4%D0%B8%D1%80_%D0%9D%D0%B0%D0%B9%D0%BB%D0%BB"}]
+      },
+      {
+        id: "boss-10-03",
+        name: "Борелис Леденящий Туман",
+        category: "Боссы",
+        region: "Вершины великанов",
+        location: "Замёрзшее озеро",
+        source: "Босс",
+        note: "Необязательный босс.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%91%D0%BE%D1%80%D0%B5%D0%BB%D0%B8%D1%81_%D0%9B%D0%B5%D0%B4%D0%B5%D0%BD%D1%8F%D1%89%D0%B8%D0%B9_%D0%A2%D1%83%D0%BC%D0%B0%D0%BD"}]
+      },
+      {
+        id: "boss-11-01",
+        name: "Астель, Звёзды Тьмы",
+        category: "Боссы",
+        region: "Священное заснеженное поле",
+        location: "Туннель Йеллоу Аникс",
+        source: "Босс",
+        note: "Необязательный босс.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%90%D1%81%D1%82%D0%B5%D0%BB%D1%8C%2C_%D0%97%D0%B2%D1%91%D0%B7%D0%B4%D1%8B_%D0%A2%D1%8C%D0%BC%D1%8B"}]
+      },
+      {
+        id: "boss-11-02",
+        name: "Великий змей Теодорикс",
+        category: "Боссы",
+        region: "Священное заснеженное поле",
+        location: "Замёрзшая река у пещеры Покинутых",
+        source: "Босс",
+        note: "Необязательный босс.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%92%D0%B5%D0%BB%D0%B8%D0%BA%D0%B8%D0%B9_%D0%B7%D0%BC%D0%B5%D0%B9_%D0%A2%D0%B5%D0%BE%D0%B4%D0%BE%D1%80%D0%B8%D0%BA%D1%81"}]
+      },
+      {
+        id: "boss-11-03",
+        name: "Гнилостный аватар",
+        category: "Боссы",
+        region: "Священное заснеженное поле",
+        location: "Малое Древо Эрд Священного заснеженного поля",
+        source: "Босс",
+        note: "Необязательный босс.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%93%D0%BD%D0%B8%D0%BB%D0%BE%D1%81%D1%82%D0%BD%D1%8B%D0%B9_%D0%B0%D0%B2%D0%B0%D1%82%D0%B0%D1%80"}]
+      },
+      {
+        id: "boss-12-01",
+        name: "Двое из божественной кожи",
+        category: "Боссы",
+        region: "Разрушающийся Фарум-Азула",
+        location: "Храм дракона",
+        source: "Босс",
+        note: "Обязательный босс.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%94%D0%B2%D0%BE%D0%B5_%D0%B8%D0%B7_%D0%B1%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D0%BE%D0%B9_%D0%BA%D0%BE%D0%B6%D0%B8"}]
+      },
+      {
+        id: "boss-12-02",
+        name: "Маликет Чёрный Клинок",
+        category: "Боссы",
+        region: "Разрушающийся Фарум-Азула",
+        location: "Великий мост",
+        source: "Босс",
+        note: "Обязательный босс. Награда: Чёрный клинок Маликета.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%9C%D0%B0%D0%BB%D0%B8%D0%BA%D0%B5%D1%82_%D0%A7%D1%91%D1%80%D0%BD%D1%8B%D0%B9_%D0%9A%D0%BB%D0%B8%D0%BD%D0%BE%D0%BA"}]
+      },
+      {
+        id: "boss-12-03",
+        name: "Повелитель драконов Пласидусакс",
+        category: "Боссы",
+        region: "Разрушающийся Фарум-Азула",
+        location: "Сердце бури Фарум-Азула",
+        source: "Босс",
+        note: "Необязательный босс. Награда: Каменный меч короля драконов.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%9F%D0%BE%D0%B2%D0%B5%D0%BB%D0%B8%D1%82%D0%B5%D0%BB%D1%8C_%D0%B4%D1%80%D0%B0%D0%BA%D0%BE%D0%BD%D0%BE%D0%B2_%D0%9F%D0%BB%D0%B0%D1%81%D0%B8%D0%B4%D1%83%D1%81%D0%B0%D0%BA%D1%81"}]
+      },
+      {
+        id: "boss-13-01",
+        name: "Дух предка",
+        category: "Боссы",
+        region: "Река Сиофра",
+        location: "Земли рогатого народа у реки Сиофра",
+        source: "Босс",
+        note: "Необязательный босс.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%94%D1%83%D1%85_%D0%BF%D1%80%D0%B5%D0%B4%D0%BA%D0%B0"}]
+      },
+      {
+        id: "boss-13-02",
+        name: "Дух величавого предка",
+        category: "Боссы",
+        region: "Река Сиофра",
+        location: "Нокрон, вечный город",
+        source: "Босс",
+        note: "Необязательный босс.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%94%D1%83%D1%85_%D0%B2%D0%B5%D0%BB%D0%B8%D1%87%D0%B0%D0%B2%D0%BE%D0%B3%D0%BE_%D0%BF%D1%80%D0%B5%D0%B4%D0%BA%D0%B0"}]
+      },
+      {
+        id: "boss-13-03",
+        name: "Отважные горгульи",
+        category: "Боссы",
+        region: "Река Сиофра",
+        location: "Акведук Сиофры",
+        source: "Босс",
+        note: "Необязательный босс. Награда: Двуручник горгулий.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%9E%D1%82%D0%B2%D0%B0%D0%B6%D0%BD%D1%8B%D0%B5_%D0%B3%D0%BE%D1%80%D0%B3%D1%83%D0%BB%D1%8C%D0%B8"}]
+      },
+      {
+        id: "boss-13-04",
+        name: "Мог Повелитель Крови",
+        category: "Боссы",
+        region: "Река Сиофра",
+        location: "Дворец Могвинов",
+        source: "Босс",
+        note: "Необязательный босс. Награда: Священное копьё Могвина.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%9C%D0%BE%D0%B3_%D0%9F%D0%BE%D0%B2%D0%B5%D0%BB%D0%B8%D1%82%D0%B5%D0%BB%D1%8C_%D0%9A%D1%80%D0%BE%D0%B2%D0%B8"}]
+      },
+      {
+        id: "boss-14-01",
+        name: "Солдат-драконид Нокстеллы",
+        category: "Боссы",
+        region: "Река Ансель",
+        location: "Река Ансель",
+        source: "Босс",
+        note: "Необязательный босс.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%A1%D0%BE%D0%BB%D0%B4%D0%B0%D1%82-%D0%B4%D1%80%D0%B0%D0%BA%D0%BE%D0%BD%D0%B8%D0%B4_%D0%9D%D0%BE%D0%BA%D1%81%D1%82%D0%B5%D0%BB%D0%BB%D1%8B"}]
+      },
+      {
+        id: "boss-14-02",
+        name: "Солдат-драконид",
+        category: "Боссы",
+        region: "Река Ансель",
+        location: "Озеро гнили",
+        source: "Босс",
+        note: "Необязательный босс. Награда: Меч из драконьей чешуи.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%A1%D0%BE%D0%BB%D0%B4%D0%B0%D1%82-%D0%B4%D1%80%D0%B0%D0%BA%D0%BE%D0%BD%D0%B8%D0%B4"}]
+      },
+      {
+        id: "boss-14-03",
+        name: "Астель, Рождённый Бездной",
+        category: "Боссы",
+        region: "Река Ансель",
+        location: "За Великим клуатром",
+        source: "Босс",
+        note: "Необязательный босс.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%90%D1%81%D1%82%D0%B5%D0%BB%D1%8C%2C_%D0%A0%D0%BE%D0%B6%D0%B4%D1%91%D0%BD%D0%BD%D1%8B%D0%B9_%D0%91%D0%B5%D0%B7%D0%B4%D0%BD%D0%BE%D0%B9"}]
+      },
+      {
+        id: "boss-15-01",
+        name: "Защитники Фии",
+        category: "Боссы",
+        region: "Низовье глубокого корня",
+        location: "У корней Древа Эрд",
+        source: "Босс",
+        note: "Необязательный босс.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%97%D0%B0%D1%89%D0%B8%D1%82%D0%BD%D0%B8%D0%BA%D0%B8_%D0%A4%D0%B8%D0%B8"}]
+      },
+      {
+        id: "boss-15-02",
+        name: "Дракон-лич Фортисакс",
+        category: "Боссы",
+        region: "Низовье глубокого корня",
+        location: "Сон Фии",
+        source: "Босс",
+        note: "Необязательный босс.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%94%D1%80%D0%B0%D0%BA%D0%BE%D0%BD-%D0%BB%D0%B8%D1%87_%D0%A4%D0%BE%D1%80%D1%82%D0%B8%D1%81%D0%B0%D0%BA%D1%81"}]
+      },
+      {
+        id: "boss-15-03",
+        name: "Рыцарь Горнила Силурия",
+        category: "Боссы",
+        region: "Низовье глубокого корня",
+        location: "Низовье глубокого корня",
+        source: "Босс",
+        note: "Необязательный босс. Награда: Дерево Силурии.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%A0%D1%8B%D1%86%D0%B0%D1%80%D1%8C_%D0%93%D0%BE%D1%80%D0%BD%D0%B8%D0%BB%D0%B0_%D0%A1%D0%B8%D0%BB%D1%83%D1%80%D0%B8%D1%8F"}]
+      },
+      {
+        id: "boss-16-01",
+        name: "Лоретта, рыцарь Святого Древа",
+        category: "Боссы",
+        region: "Святое древо Микеллы",
+        location: "Святое древо Микеллы",
+        source: "Босс",
+        note: "Необязательный босс. Награда: Боевой серп Лоретты.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%9B%D0%BE%D1%80%D0%B5%D1%82%D1%82%D0%B0%2C_%D1%80%D1%8B%D1%86%D0%B0%D1%80%D1%8C_%D0%A1%D0%B2%D1%8F%D1%82%D0%BE%D0%B3%D0%BE_%D0%94%D1%80%D0%B5%D0%B2%D0%B0"}]
+      },
+      {
+        id: "boss-16-02",
+        name: "Маления, Клинок Микеллы",
+        category: "Боссы",
+        region: "Святое древо Микеллы",
+        location: "Эльфаэль, опора Святого Древа",
+        source: "Босс",
+        note: "Необязательный босс. Награда: Длань Малении.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%9C%D0%B0%D0%BB%D0%B5%D0%BD%D0%B8%D1%8F%2C_%D0%9A%D0%BB%D0%B8%D0%BD%D0%BE%D0%BA_%D0%9C%D0%B8%D0%BA%D0%B5%D0%BB%D0%BB%D1%8B"}]
+      },
+      {
+        id: "boss-17-01",
+        name: "Божественный зверь танцующий лев",
+        category: "Боссы",
+        region: "Равнина надгробий",
+        location: "Белурат, поселение у башни",
+        source: "Босс",
+        note: "Необязательный босс.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%91%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%B7%D0%B2%D0%B5%D1%80%D1%8C_%D1%82%D0%B0%D0%BD%D1%86%D1%83%D1%8E%D1%89%D0%B8%D0%B9_%D0%BB%D0%B5%D0%B2"}]
+      },
+      {
+        id: "boss-17-02",
+        name: "Реллана, рыцарь Двойной Луны",
+        category: "Боссы",
+        region: "Равнина надгробий",
+        location: "Замок Энсис",
+        source: "Босс",
+        note: "Необязательный босс.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%A0%D0%B5%D0%BB%D0%BB%D0%B0%D0%BD%D0%B0%2C_%D1%80%D1%8B%D1%86%D0%B0%D1%80%D1%8C_%D0%94%D0%B2%D0%BE%D0%B9%D0%BD%D0%BE%D0%B9_%D0%9B%D1%83%D0%BD%D1%8B"}]
+      },
+      {
+        id: "boss-17-03",
+        name: "Рыцарь Чёрной тюрьмы",
+        category: "Боссы",
+        region: "Равнина надгробий",
+        location: "Западный безымянный мавзолей",
+        source: "Босс",
+        note: "Необязательный босс.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%A0%D1%8B%D1%86%D0%B0%D1%80%D1%8C_%D0%A7%D1%91%D1%80%D0%BD%D0%BE%D0%B9_%D1%82%D1%8E%D1%80%D1%8C%D0%BC%D1%8B"}]
+      },
+      {
+        id: "boss-18-01",
+        name: "Рыцарь Игольщица Леда и союзники",
+        category: "Боссы",
+        region: "Окрестности башни",
+        location: "Энир-Илим",
+        source: "Босс",
+        note: "Обязательный босс.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%A0%D1%8B%D1%86%D0%B0%D1%80%D1%8C_%D0%98%D0%B3%D0%BE%D0%BB%D1%8C%D1%89%D0%B8%D1%86%D0%B0_%D0%9B%D0%B5%D0%B4%D0%B0_%D0%B8_%D1%81%D0%BE%D1%8E%D0%B7%D0%BD%D0%B8%D0%BA%D0%B8"}]
+      },
+      {
+        id: "boss-18-02",
+        name: "Радан, обещанный супруг",
+        category: "Боссы",
+        region: "Окрестности башни",
+        location: "Врата Божественности",
+        source: "Босс",
+        note: "Обязательный босс.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%A0%D0%B0%D0%B4%D0%B0%D0%BD%2C_%D0%BE%D0%B1%D0%B5%D1%89%D0%B0%D0%BD%D0%BD%D1%8B%D0%B9_%D1%81%D1%83%D0%BF%D1%80%D1%83%D0%B3"}]
+      },
+      {
+        id: "boss-19-01",
+        name: "Мессмер Колосажатель",
+        category: "Боссы",
+        region: "Теневой Альтус",
+        location: "Пристанище Теней",
+        source: "Босс",
+        note: "Обязательный босс.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%9C%D0%B5%D1%81%D1%81%D0%BC%D0%B5%D1%80_%D0%9A%D0%BE%D0%BB%D0%BE%D1%81%D0%B0%D0%B6%D0%B0%D1%82%D0%B5%D0%BB%D1%8C"}]
+      },
+      {
+        id: "boss-19-02",
+        name: "Золотой гиппопотам",
+        category: "Боссы",
+        region: "Теневой Альтус",
+        location: "Главные ворота Пристанища Теней",
+        source: "Босс",
+        note: "Необязательный босс.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%97%D0%BE%D0%BB%D0%BE%D1%82%D0%BE%D0%B9_%D0%B3%D0%B8%D0%BF%D0%BF%D0%BE%D0%BF%D0%BE%D1%82%D0%B0%D0%BC"}]
+      },
+      {
+        id: "boss-19-03",
+        name: "Метир, Матерь Пальцев",
+        category: "Боссы",
+        region: "Теневой Альтус",
+        location: "Руины обители пальцев Миира",
+        source: "Босс",
+        note: "Необязательный босс.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%9C%D0%B5%D1%82%D0%B8%D1%80%2C_%D0%9C%D0%B0%D1%82%D0%B5%D1%80%D1%8C_%D0%9F%D0%B0%D0%BB%D1%8C%D1%86%D0%B5%D0%B2"}]
+      },
+      {
+        id: "boss-20-01",
+        name: "Аватар Древа Упадка",
+        category: "Боссы",
+        region: "Вид на Древо Упадка",
+        location: "Основание Древа Упадка",
+        source: "Босс",
+        note: "Необязательный босс.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%90%D0%B2%D0%B0%D1%82%D0%B0%D1%80_%D0%94%D1%80%D0%B5%D0%B2%D0%B0_%D0%A3%D0%BF%D0%B0%D0%B4%D0%BA%D0%B0"}]
+      },
+      {
+        id: "boss-20-02",
+        name: "Командир Гай",
+        category: "Боссы",
+        region: "Вид на Древо Упадка",
+        location: "К северу от Пристанища Теней",
+        source: "Босс",
+        note: "Необязательный босс.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%9A%D0%BE%D0%BC%D0%B0%D0%BD%D0%B4%D0%B8%D1%80_%D0%93%D0%B0%D0%B9"}]
+      },
+      {
+        id: "boss-21-01",
+        name: "Рыцарь Гниения",
+        category: "Боссы",
+        region: "Лазурное побережье",
+        location: "Разлом в каменном саркофаге",
+        source: "Босс",
+        note: "Необязательный босс.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%A0%D1%8B%D1%86%D0%B0%D1%80%D1%8C_%D0%93%D0%BD%D0%B8%D0%B5%D0%BD%D0%B8%D1%8F"}]
+      },
+      {
+        id: "boss-21-02",
+        name: "Королева полулюдей Маригга",
+        category: "Боссы",
+        region: "Лазурное побережье",
+        location: "Лазурное побережье",
+        source: "Босс",
+        note: "Необязательный босс.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%9A%D0%BE%D1%80%D0%BE%D0%BB%D0%B5%D0%B2%D0%B0_%D0%BF%D0%BE%D0%BB%D1%83%D0%BB%D1%8E%D0%B4%D0%B5%D0%B9_%D0%9C%D0%B0%D1%80%D0%B8%D0%B3%D0%B3%D0%B0"}]
+      },
+      {
+        id: "boss-21-03",
+        name: "Призрачный дракон пламени",
+        category: "Боссы",
+        region: "Лазурное побережье",
+        location: "Лазурное побережье",
+        source: "Босс",
+        note: "Необязательный босс.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%9F%D1%80%D0%B8%D0%B7%D1%80%D0%B0%D1%87%D0%BD%D1%8B%D0%B9_%D0%B4%D1%80%D0%B0%D0%BA%D0%BE%D0%BD_%D0%BF%D0%BB%D0%B0%D0%BC%D0%B5%D0%BD%D0%B8"}]
+      },
+      {
+        id: "boss-22-01",
+        name: "Бейл Ужасный",
+        category: "Боссы",
+        region: "Зубатая гора",
+        location: "Вершина Зубатой горы",
+        source: "Босс",
+        note: "Необязательный босс.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%91%D0%B5%D0%B9%D0%BB_%D0%A3%D0%B6%D0%B0%D1%81%D0%BD%D1%8B%D0%B9"}]
+      },
+      {
+        id: "boss-22-02",
+        name: "Древний дракон Сенессакс",
+        category: "Боссы",
+        region: "Зубатая гора",
+        location: "Зубатая гора",
+        source: "Босс",
+        note: "Необязательный босс.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%94%D1%80%D0%B5%D0%B2%D0%BD%D0%B8%D0%B9_%D0%B4%D1%80%D0%B0%D0%BA%D0%BE%D0%BD_%D0%A1%D0%B5%D0%BD%D0%B5%D1%81%D1%81%D0%B0%D0%BA%D1%81"}]
+      },
+      {
+        id: "boss-22-03",
+        name: "Дракон Зубатой горы",
+        category: "Боссы",
+        region: "Зубатая гора",
+        location: "Склоны Зубатой горы",
+        source: "Босс",
+        note: "Необязательный босс.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%94%D1%80%D0%B0%D0%BA%D0%BE%D0%BD_%D0%97%D1%83%D0%B1%D0%B0%D1%82%D0%BE%D0%B9_%D0%B3%D0%BE%D1%80%D1%8B"}]
+      },
+      {
+        id: "boss-23-01",
+        name: "Рыцарь смерти",
+        category: "Боссы",
+        region: "Прибежище Рауха",
+        location: "Катакомбы под Скорпионовой рекой",
+        source: "Босс",
+        note: "Необязательный босс.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%A0%D1%8B%D1%86%D0%B0%D1%80%D1%8C_%D1%81%D0%BC%D0%B5%D1%80%D1%82%D0%B8"}]
+      },
+      {
+        id: "boss-23-02",
+        name: "Ругалия, великий красный медведь",
+        category: "Боссы",
+        region: "Прибежище Рауха",
+        location: "Лесная часть Прибежища Рауха",
+        source: "Босс",
+        note: "Необязательный босс.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%A0%D1%83%D0%B3%D0%B0%D0%BB%D0%B8%D1%8F%2C_%D0%B2%D0%B5%D0%BB%D0%B8%D0%BA%D0%B8%D0%B9_%D0%BA%D1%80%D0%B0%D1%81%D0%BD%D1%8B%D0%B9_%D0%BC%D0%B5%D0%B4%D0%B2%D0%B5%D0%B4%D1%8C"}]
+      },
+      {
+        id: "boss-24-01",
+        name: "Ромина, святая цветочных бутонов",
+        category: "Боссы",
+        region: "Руины древней обители Рауха",
+        location: "Церковь цветочных бутонов",
+        source: "Босс",
+        note: "Обязательный босс.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%A0%D0%BE%D0%BC%D0%B8%D0%BD%D0%B0%2C_%D1%81%D0%B2%D1%8F%D1%82%D0%B0%D1%8F_%D1%86%D0%B2%D0%B5%D1%82%D0%BE%D1%87%D0%BD%D1%8B%D1%85_%D0%B1%D1%83%D1%82%D0%BE%D0%BD%D0%BE%D0%B2"}]
+      },
+      {
+        id: "boss-24-02",
+        name: "Птица смерти",
+        category: "Боссы",
+        region: "Руины древней обители Рауха",
+        location: "Руины древней обители Рауха",
+        source: "Босс",
+        note: "Необязательный босс.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%9F%D1%82%D0%B8%D1%86%D0%B0_%D1%81%D0%BC%D0%B5%D1%80%D1%82%D0%B8"}]
+      },
+      {
+        id: "boss-25-01",
+        name: "Мидра, владыка яростного пламени",
+        category: "Боссы",
+        region: "Лес бездны",
+        location: "Поместье Мидры",
+        source: "Босс",
+        note: "Необязательный босс.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%9C%D0%B8%D0%B4%D1%80%D0%B0%2C_%D0%B2%D0%BB%D0%B0%D0%B4%D1%8B%D0%BA%D0%B0_%D1%8F%D1%80%D0%BE%D1%81%D1%82%D0%BD%D0%BE%D0%B3%D0%BE_%D0%BF%D0%BB%D0%B0%D0%BC%D0%B5%D0%BD%D0%B8"}]
+      },
+      {
+        id: "boss-25-02",
+        name: "Йори, старейшина инквизиторов",
+        category: "Боссы",
+        region: "Лес бездны",
+        location: "Тёмные катакомбы",
+        source: "Босс",
+        note: "Необязательный босс.",
+        links: [{"label":"Fandom","url":"https://eldenring.fandom.com/ru/wiki/%D0%99%D0%BE%D1%80%D0%B8%2C_%D1%81%D1%82%D0%B0%D1%80%D0%B5%D0%B9%D1%88%D0%B8%D0%BD%D0%B0_%D0%B8%D0%BD%D0%BA%D0%B2%D0%B8%D0%B7%D0%B8%D1%82%D0%BE%D1%80%D0%BE%D0%B2"}]
       }
     ];
 
