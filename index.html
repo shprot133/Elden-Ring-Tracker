@@ -2,6 +2,12 @@
 <html lang="ru">
 <head>
   <meta charset="utf-8">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#c8a84b">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="ER Tracker">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Elden Ring Tracker</title>
   <script>
@@ -310,7 +316,7 @@
 
     .topbar {
       display: grid;
-      grid-template-columns: minmax(260px, 1fr) minmax(360px, 680px) auto auto auto;
+      grid-template-columns: minmax(260px, 1fr) minmax(360px, 680px) auto auto auto auto;
       align-items: center;
       gap: 20px;
       padding: 18px 24px;
@@ -458,6 +464,30 @@
 
     .theme-button:hover,
     .theme-switcher.open .theme-button {
+      border-color: rgba(var(--theme-accent-strong-rgb), .58);
+      background: rgba(var(--theme-accent-rgb), .12);
+    }
+
+    .install-button {
+      height: 38px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 0 13px;
+      color: var(--gold-2);
+      border: 1px solid rgba(var(--theme-accent-rgb), .34);
+      border-radius: var(--radius);
+      background: rgba(var(--theme-bg-secondary-rgb), .86);
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .install-button.is-visible {
+      display: inline-flex;
+    }
+
+    .install-button:hover {
       border-color: rgba(var(--theme-accent-strong-rgb), .58);
       background: rgba(var(--theme-accent-rgb), .12);
     }
@@ -1482,11 +1512,11 @@
       }
 
       .topbar {
-        grid-template-columns: minmax(0, 1fr) 44px;
+        grid-template-columns: minmax(0, 1fr) 44px 44px;
         grid-template-areas:
-          "brand brand"
-          "search theme"
-          "stats stats";
+          "brand brand brand"
+          "search install theme"
+          "stats stats stats";
         align-items: center;
         padding: 12px;
         gap: 10px;
@@ -1519,6 +1549,19 @@
       .theme-switcher {
         grid-area: theme;
         justify-self: stretch;
+      }
+
+      .install-button {
+        grid-area: install;
+        width: 44px;
+        height: 42px;
+        padding: 0;
+        font-size: 0;
+      }
+
+      .install-button::before {
+        content: "⬇";
+        font-size: 18px;
       }
 
       .theme-button {
@@ -1849,6 +1892,7 @@
           <span>прогресс</span>
         </div>
       </div>
+      <button class="install-button" id="install-btn" type="button">⬇ Установить</button>
       <div class="theme-switcher" data-theme-switcher>
         <button class="theme-button" type="button" data-theme-toggle aria-expanded="false">Тема</button>
         <div class="theme-menu" role="menu" aria-label="Выбор темы оформления">
@@ -10743,6 +10787,37 @@
 
     render();
     window.setTimeout(prefetchAllItemIcons, 500);
+  </script>
+  <script>
+    let deferredInstallPrompt = null;
+    const installButton = document.getElementById("install-btn");
+
+    window.addEventListener("beforeinstallprompt", event => {
+      event.preventDefault();
+      deferredInstallPrompt = event;
+      installButton?.classList.add("is-visible");
+    });
+
+    installButton?.addEventListener("click", async () => {
+      if (!deferredInstallPrompt) return;
+      deferredInstallPrompt.prompt();
+      const { outcome } = await deferredInstallPrompt.userChoice;
+      if (outcome === "accepted") installButton.classList.remove("is-visible");
+      deferredInstallPrompt = null;
+    });
+
+    window.addEventListener("appinstalled", () => {
+      deferredInstallPrompt = null;
+      installButton?.classList.remove("is-visible");
+    });
+
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js")
+          .then(registration => console.log("SW registered:", registration.scope))
+          .catch(error => console.log("SW error:", error));
+      });
+    }
   </script>
 </body>
 </html>
