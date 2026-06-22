@@ -1059,9 +1059,7 @@
     }
 
     .step-main {
-      display: grid;
-      grid-template-columns: 40px minmax(0, 1fr);
-      gap: 10px;
+      display: block;
       align-items: center;
       min-width: 0;
       background: transparent;
@@ -1069,43 +1067,6 @@
       color: inherit;
       padding: 0;
       text-align: left;
-    }
-
-    .item-icon {
-      width: 40px;
-      height: 40px;
-      display: grid;
-      place-items: center;
-      overflow: hidden;
-      border: 1px solid rgba(var(--theme-text-soft-rgb), .16);
-      border-radius: 7px;
-      background:
-        radial-gradient(circle at 50% 42%, rgba(var(--theme-accent-rgb), .18), transparent 62%),
-        rgba(var(--theme-bg-primary-rgb), .52);
-      background-position: center;
-      background-repeat: no-repeat;
-      background-size: contain;
-      box-shadow: inset 0 0 0 1px rgba(var(--theme-black-rgb), .24);
-      flex: 0 0 auto;
-      transition: border-color .2s ease, opacity .2s ease;
-    }
-
-    .item-icon::before {
-      content: attr(data-fallback-icon);
-      color: rgba(var(--theme-accent-rgb), .72);
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: 20px;
-      line-height: 1;
-      opacity: .72;
-    }
-
-    .item-icon.has-image {
-      border-color: rgba(var(--theme-accent-rgb), .34);
-      background-color: rgba(var(--theme-bg-primary-rgb), .56);
-    }
-
-    .item-icon.has-image::before {
-      display: none;
     }
 
     .step-title {
@@ -1966,10 +1927,10 @@
     <input id="userDataInput" class="hidden-input" type="file" accept="application/json">
   </div>
 
-  <script src="tracker-data.js?v=20260622-02"></script>
+  <script src="tracker-data.js?v=20260622-03"></script>
   <script>
     const trackerMeta = window.ELDEN_RING_TRACKER_META || {
-      databaseVersion: "2026.06.22-02",
+      databaseVersion: "2026.06.22-03",
       updatedAt: "2026-06-22",
       itemCount: 0,
       dlcItemCount: 0,
@@ -2472,14 +2433,6 @@
 
     function itemFandomTitle(item) {
       return fandomTitleFromUrl(directFandomLink(item)?.url || "") || item.name;
-    }
-
-    function itemIconKey(item) {
-      return itemFandomTitle(item);
-    }
-
-    function itemIconUrl(item) {
-      return String(item.iconUrl || "").trim();
     }
 
     function syncMapLink(links = [], mapUrl = "") {
@@ -8469,6 +8422,8 @@
     }
 
     cleanRemovedRegionStorage();
+    localStorage.removeItem("elden-ring-item-icons");
+    localStorage.removeItem("elden-ring-item-icons-version");
 
     const state = {
       region: "Все локации",
@@ -8488,7 +8443,6 @@
       editingRegion: false,
       collapsedRegionSections: JSON.parse(localStorage.getItem("elden-ring-collapsed-region-sections") || "{}"),
       regionImages: JSON.parse(localStorage.getItem("elden-ring-region-images") || "{}"),
-      itemIcons: JSON.parse(localStorage.getItem("elden-ring-item-icons") || "{}"),
       playerNotes: JSON.parse(localStorage.getItem("elden-ring-player-notes") || "{}"),
       customRegions: JSON.parse(localStorage.getItem("elden-ring-custom-regions") || "[]"),
       regionEdits: JSON.parse(localStorage.getItem("elden-ring-region-edits") || "{}"),
@@ -8839,7 +8793,6 @@
             source: item.source,
             note: item.note,
             warning: item.warning,
-            iconUrl: item.iconUrl || "",
             links: item.links
           };
         }
@@ -8880,7 +8833,6 @@
         source: form.source.value.trim() || item.source,
         note: form.note.value.trim(),
         warning: form.warning.value.trim(),
-        iconUrl: form.iconUrl.value.trim(),
         links
       };
 
@@ -8905,7 +8857,6 @@
         source: form.source.value.trim() || "Заметка",
         note: form.note.value.trim() || "Описание еще не добавлено.",
         warning: form.warning.value.trim(),
-        iconUrl: form.iconUrl.value.trim(),
         links: syncMapLink(parseLinks(form.links.value, []), form.mapUrl.value)
       };
 
@@ -9368,270 +9319,6 @@
       regionImageRequests.set(region, request);
     }
 
-    const itemIconRequests = new Map();
-    const itemIconCacheVersion = "2026-06-22-fandom-retry-images-2";
-    let itemIconObserver = null;
-
-    function saveItemIcons() {
-      localStorage.setItem("elden-ring-item-icons", JSON.stringify(state.itemIcons));
-    }
-
-    function isGifImageUrl(url = "") {
-      return /\.gif(?:[/?#]|$)/i.test(String(url));
-    }
-
-    function isPngImageUrl(url = "") {
-      return /\.png(?:[/?#]|$)/i.test(String(url)) && !isGifImageUrl(url);
-    }
-
-    function refreshItemIconCache() {
-      if (localStorage.getItem("elden-ring-item-icons-version") === itemIconCacheVersion) return;
-      Object.keys(state.itemIcons).forEach(title => delete state.itemIcons[title]);
-      saveItemIcons();
-      localStorage.setItem("elden-ring-item-icons-version", itemIconCacheVersion);
-    }
-
-    refreshItemIconCache();
-
-    function bestPngImage(...urls) {
-      return urls.find(isPngImageUrl) || "";
-    }
-
-    function normalizeImageTitle(value = "") {
-      return String(value)
-        .toLocaleLowerCase("ru")
-        .replace(/^file:/, "")
-        .replace(/^файл:/, "")
-        .replace(/\.[a-z0-9]+$/i, "")
-        .replace(/[^a-zа-яё0-9]+/gi, "");
-    }
-
-    function sortImageTitlesForItem(imageTitles = [], itemTitle = "") {
-      const needle = normalizeImageTitle(itemTitle);
-      return [...imageTitles].sort((a, b) => {
-        const aScore = normalizeImageTitle(a).includes(needle) ? 0 : 1;
-        const bScore = normalizeImageTitle(b).includes(needle) ? 0 : 1;
-        return aScore - bScore;
-      });
-    }
-
-    function redirectedTitleMap(data, titles) {
-      const titleMap = new Map(titles.map(title => [title, title]));
-      (data?.query?.normalized || []).forEach(entry => {
-        if (titleMap.has(entry.from)) titleMap.set(entry.from, entry.to);
-      });
-      (data?.query?.redirects || []).forEach(entry => {
-        [...titleMap.entries()].forEach(([input, current]) => {
-          if (current === entry.from || input === entry.from) titleMap.set(input, entry.to);
-        });
-      });
-      return titleMap;
-    }
-
-    async function fetchItemIconsBatch(titles) {
-      const cleanTitles = [...new Set(titles.filter(Boolean))];
-      if (!cleanTitles.length || typeof fetch !== "function") return {};
-      const api = new URL("https://eldenring.fandom.com/ru/api.php");
-      api.searchParams.set("origin", "*");
-      api.searchParams.set("action", "query");
-      api.searchParams.set("format", "json");
-      api.searchParams.set("redirects", "1");
-      api.searchParams.set("prop", "pageimages");
-      api.searchParams.set("piprop", "thumbnail|original");
-      api.searchParams.set("pithumbsize", "120");
-      api.searchParams.set("titles", cleanTitles.join("|"));
-      try {
-        const response = await fetch(api.toString());
-        if (!response.ok) return {};
-        const data = await response.json();
-        const titleMap = redirectedTitleMap(data, cleanTitles);
-        const pages = Object.values(data?.query?.pages || {});
-        const pageByTitle = new Map(pages.map(page => [page.title, page]));
-        const result = {};
-        cleanTitles.forEach(inputTitle => {
-          const page = pageByTitle.get(titleMap.get(inputTitle));
-          result[inputTitle] = bestPngImage(page?.thumbnail?.source, page?.original?.source);
-        });
-        return result;
-      } catch {
-        return {};
-      }
-    }
-
-    async function fetchItemIconFromPageImages(title) {
-      const api = new URL("https://eldenring.fandom.com/ru/api.php");
-      api.searchParams.set("origin", "*");
-      api.searchParams.set("action", "query");
-      api.searchParams.set("format", "json");
-      api.searchParams.set("redirects", "1");
-      api.searchParams.set("prop", "images");
-      api.searchParams.set("imlimit", "50");
-      api.searchParams.set("titles", title);
-      try {
-        const response = await fetch(api.toString());
-        if (!response.ok) return "";
-        const data = await response.json();
-        const pages = Object.values(data?.query?.pages || {});
-        const page = pages.find(entry => !entry.missing);
-        const imageTitles = sortImageTitlesForItem(
-          (page?.images || [])
-            .map(image => image.title)
-            .filter(imageTitle => /\.png$/i.test(imageTitle)),
-          title
-        ).slice(0, 12);
-        if (!imageTitles.length) return "";
-
-        const imageApi = new URL("https://eldenring.fandom.com/ru/api.php");
-        imageApi.searchParams.set("origin", "*");
-        imageApi.searchParams.set("action", "query");
-        imageApi.searchParams.set("format", "json");
-        imageApi.searchParams.set("prop", "imageinfo");
-        imageApi.searchParams.set("iiprop", "url|mime");
-        imageApi.searchParams.set("iiurlwidth", "120");
-        imageApi.searchParams.set("titles", imageTitles.join("|"));
-        const imageResponse = await fetch(imageApi.toString());
-        if (!imageResponse.ok) return "";
-        const imageData = await imageResponse.json();
-        const imagePages = Object.values(imageData?.query?.pages || {});
-        for (const imageTitle of imageTitles) {
-          const imagePage = imagePages.find(pageInfo => pageInfo.title === imageTitle);
-          const info = imagePage?.imageinfo?.[0];
-          const image = bestPngImage(info?.thumburl, info?.url);
-          if (image && info?.mime === "image/png") return image;
-          if (image) return image;
-        }
-        return "";
-      } catch {
-        return "";
-      }
-    }
-
-    async function fetchItemIcon(title) {
-      const batch = await fetchItemIconsBatch([title]);
-      return batch[title] || await fetchItemIconFromPageImages(title);
-    }
-
-    async function applyItemIcon(element, url = "") {
-      if (!element || !isPngImageUrl(url)) return false;
-      const requestId = `${Date.now()}-${Math.random()}`;
-      element.dataset.iconRequest = requestId;
-      const loadedUrl = await preloadImage(url);
-      if (element.dataset.iconRequest !== requestId) return false;
-      if (!loadedUrl) {
-        element.style.backgroundImage = "";
-        element.classList.remove("has-image");
-        return false;
-      }
-      element.style.backgroundImage = `url("${String(loadedUrl).replaceAll('"', '\\"')}")`;
-      element.classList.add("has-image");
-      return true;
-    }
-
-    function itemFallbackIcon(category = "") {
-      const icons = {
-        "Боссы": "⚔",
-        "Оружие": "†",
-        "Щиты": "◇",
-        "Броня": "♜",
-        "Талисманы": "◆",
-        "Пепел войны": "✦",
-        "Прах духов": "♟",
-        "Заклинания": "✧",
-        "Молитвы": "✥"
-      };
-      return icons[category] || "•";
-    }
-
-    function applyVisibleItemIcon(title, url) {
-      if (!isPngImageUrl(url)) return;
-      document.querySelectorAll("[data-item-icon]").forEach(icon => {
-        if (icon.dataset.itemIcon === title) applyItemIcon(icon, url);
-      });
-    }
-
-    async function loadItemIcon(element) {
-      if (!element || element.dataset.iconLoading === "true") return;
-      element.dataset.iconLoading = "true";
-      const manualIcon = element?.dataset.manualIcon;
-      if (manualIcon) {
-        await applyItemIcon(element, manualIcon);
-        delete element.dataset.iconLoading;
-        return;
-      }
-      const title = element?.dataset.itemIcon;
-      if (!title) {
-        delete element.dataset.iconLoading;
-        return;
-      }
-      const cached = state.itemIcons[title];
-      if (isPngImageUrl(cached)) {
-        const loaded = await applyItemIcon(element, cached);
-        if (loaded) {
-          delete element.dataset.iconLoading;
-          return;
-        }
-        delete state.itemIcons[title];
-        saveItemIcons();
-      }
-      if (cached && !isPngImageUrl(cached)) delete state.itemIcons[title];
-      if (itemIconRequests.has(title)) {
-        delete element.dataset.iconLoading;
-        return;
-      }
-      const request = fetchItemIcon(title).then(url => {
-        state.itemIcons[title] = isPngImageUrl(url) ? url : "";
-        saveItemIcons();
-        itemIconRequests.delete(title);
-        applyVisibleItemIcon(title, state.itemIcons[title]);
-      });
-      itemIconRequests.set(title, request);
-      await request;
-      delete element.dataset.iconLoading;
-    }
-
-    function hydrateItemIcons() {
-      const icons = [...document.querySelectorAll("[data-item-icon]")];
-      if (!icons.length) return;
-      if (!("IntersectionObserver" in window)) {
-        icons.slice(0, 80).forEach(loadItemIcon);
-        return;
-      }
-      if (!itemIconObserver) {
-        itemIconObserver = new IntersectionObserver(entries => {
-          entries.forEach(entry => {
-            if (!entry.isIntersecting) return;
-            itemIconObserver.unobserve(entry.target);
-            loadItemIcon(entry.target);
-          });
-        }, { root: null, rootMargin: "320px 0px" });
-      }
-      icons.forEach(icon => {
-        if (icon.dataset.manualIcon) {
-          applyItemIcon(icon, icon.dataset.manualIcon);
-          return;
-        }
-        const cached = state.itemIcons[icon.dataset.itemIcon];
-        if (isPngImageUrl(cached)) {
-          applyItemIcon(icon, cached);
-        } else if (cached && !isPngImageUrl(cached)) {
-          delete state.itemIcons[icon.dataset.itemIcon];
-          itemIconObserver.observe(icon);
-        } else {
-          itemIconObserver.observe(icon);
-        }
-      });
-      icons
-        .filter(icon => {
-          const rect = icon.getBoundingClientRect();
-          return rect.bottom >= -320 && rect.top <= window.innerHeight + 320;
-        })
-        .slice(0, 24)
-        .forEach(icon => {
-          itemIconObserver.unobserve(icon);
-          loadItemIcon(icon);
-        });
-    }
-
     function filteredItems() {
       const query = state.search.trim().toLowerCase();
       return items.filter(item => {
@@ -9978,10 +9665,6 @@
             <input name="mapUrl" value="${escapeHtml(mapLink?.url || "")}" placeholder="https://mapgenie.io/elden-ring/maps/the-lands-between?locationIds=...">
           </label>
           <label class="wide">
-            Иконка
-            <input name="iconUrl" value="${escapeHtml(item.iconUrl || "")}" placeholder="https://static.wikia.nocookie.net/.../image.png">
-          </label>
-          <label class="wide">
             Ссылки
             <textarea class="compact" name="links" placeholder="Fandom | https://eldenring.fandom.com/ru/wiki/Редувия">${escapeHtml(formatLinks(regularLinks(item.links || [])))}</textarea>
           </label>
@@ -10040,15 +9723,12 @@
               const done = state.done.has(item.id);
               const mapLink = itemMapLink(item);
               const links = regularLinks(item.links || []);
-              const iconTitle = itemIconKey(item);
-              const manualIcon = itemIconUrl(item);
               return `
                 <article class="step ${done ? "done" : ""} ${state.selectedId === item.id ? "selected" : ""}">
                   <button class="check" data-toggle="${escapeHtml(item.id)}" aria-label="${done ? "Убрать отметку" : "Отметить"} ${escapeHtml(item.name)}">
                     <span class="check-mark">✓</span>
                   </button>
                   <button class="step-main" data-select="${escapeHtml(item.id)}">
-                    <span class="item-icon" data-item-icon="${escapeHtml(iconTitle)}" data-manual-icon="${escapeHtml(manualIcon)}" data-fallback-icon="${escapeHtml(itemFallbackIcon(item.category))}" aria-hidden="true"></span>
                     <div class="step-copy">
                       <div class="step-title">
                         <span>${escapeHtml(item.name)}</span>
@@ -10067,7 +9747,6 @@
           </div>
         </section>
       `).join("");
-      window.requestAnimationFrame(hydrateItemIcons);
     }
 
     function renderDetail() {
@@ -10847,7 +10526,7 @@
 
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
-        const appShellVersion = "2026.06.22-02";
+        const appShellVersion = "2026.06.22-03";
         const appShellVersionKey = "elden-ring-app-shell-version";
         const storedShellVersion = localStorage.getItem(appShellVersionKey);
         if (storedShellVersion !== appShellVersion) {
