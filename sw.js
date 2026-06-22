@@ -1,44 +1,76 @@
-const CACHE_NAME = "elden-ring-tracker-v3";
+const CACHE_PREFIX = "elden-ring-tracker-";
+const DATA_URL = "./tracker-data.js?v=20260622-01";
 const ASSETS = [
   "./",
   "./index.html",
-  "./tracker-data.js?v=20260622-01",
+  DATA_URL,
   "./manifest.json?v=2",
   "./icons/icon-192.png?v=2",
   "./icons/icon-512.png?v=2"
 ];
 
+async function getCacheName() {
+  try {
+    const response = await fetch(DATA_URL, { cache: "no-store" });
+    if (!response.ok) throw new Error("Tracker data is unavailable");
+    const source = await response.text();
+    const version = source.match(/databaseVersion:\s*["']([^"']+)["']/)?.[1];
+    if (version) return `${CACHE_PREFIX}${version}`;
+  } catch {
+    // Fall back to the latest existing tracker cache while offline.
+  }
+
+  const existing = await caches.keys();
+  return existing.find(key => key.startsWith(CACHE_PREFIX)) || `${CACHE_PREFIX}offline`;
+}
+
+const cacheNamePromise = getCacheName();
+
 self.addEventListener("install", event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS))
+    cacheNamePromise.then(cacheName =>
+      caches.open(cacheName).then(cache => cache.addAll(ASSETS))
+    )
   );
-  self.skipWaiting();
 });
 
 self.addEventListener("activate", event => {
   event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key)))
-    )
+    cacheNamePromise.then(async cacheName => {
+      const keys = await caches.keys();
+      await Promise.all(
+        keys
+          .filter(key => key.startsWith(CACHE_PREFIX) && key !== cacheName)
+          .map(key => caches.delete(key))
+      );
+      await self.clients.claim();
+    })
   );
-  self.clients.claim();
 });
 
 self.addEventListener("fetch", event => {
   if (event.request.method !== "GET") return;
 
   event.respondWith(
-    caches.match(event.request).then(cached => {
-      if (cached) return cached;
-      return fetch(event.request).then(response => {
-        if (!response || response.status !== 200 || response.type === "opaque") return response;
+    fetch(event.request, { cache: "no-store" }).then(response => {
+      if (response && response.status === 200 && response.type !== "opaque") {
         const copy = response.clone();
-        caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
-        return response;
-      });
-    }).catch(() => {
+        return cacheNamePromise
+          .then(cacheName => caches.open(cacheName))
+          .then(cache => cache.put(event.request, copy))
+          .catch(() => undefined)
+          .then(() => response);
+      }
+      return response;
+    }).catch(async () => {
+      const cached = await caches.match(event.request);
+      if (cached) return cached;
       if (event.request.mode === "navigate") return caches.match("./index.html");
       return Response.error();
     })
   );
+});
+
+self.addEventListener("message", event => {
+  if (event.data?.action === "skipWaiting") self.skipWaiting();
 });

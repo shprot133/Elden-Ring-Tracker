@@ -10832,9 +10832,31 @@
 
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
-        navigator.serviceWorker.register("./sw.js")
-          .then(registration => console.log("SW registered:", registration.scope))
+        let reloadForUpdate = false;
+        const serviceWorkerUrl = `./sw.js?v=${encodeURIComponent(trackerMeta.databaseVersion)}`;
+        navigator.serviceWorker.register(serviceWorkerUrl, { updateViaCache: "none" })
+          .then(registration => {
+            console.log("SW registered:", registration.scope);
+            registration.addEventListener("updatefound", () => {
+              const newWorker = registration.installing;
+              if (!newWorker) return;
+              newWorker.addEventListener("statechange", () => {
+                if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
+                  reloadForUpdate = true;
+                  newWorker.postMessage({ action: "skipWaiting" });
+                }
+              });
+            });
+            registration.update();
+          })
           .catch(error => console.log("SW error:", error));
+
+        let refreshing = false;
+        navigator.serviceWorker.addEventListener("controllerchange", () => {
+          if (!reloadForUpdate || refreshing) return;
+          refreshing = true;
+          window.location.reload();
+        });
       });
     }
   </script>
