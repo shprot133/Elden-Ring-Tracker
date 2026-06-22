@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "elden-ring-tracker-";
-const DATA_URL = "./tracker-data.js?v=20260622-01";
+const DATA_URL = "./tracker-data.js?v=20260622-02";
 const ASSETS = [
   "./",
   "./index.html",
@@ -32,6 +32,7 @@ self.addEventListener("install", event => {
       caches.open(cacheName).then(cache => cache.addAll(ASSETS))
     )
   );
+  self.skipWaiting();
 });
 
 self.addEventListener("activate", event => {

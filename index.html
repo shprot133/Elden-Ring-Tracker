@@ -1966,11 +1966,11 @@
     <input id="userDataInput" class="hidden-input" type="file" accept="application/json">
   </div>
 
-  <script src="tracker-data.js?v=20260622-01"></script>
+  <script src="tracker-data.js?v=20260622-02"></script>
   <script>
     const trackerMeta = window.ELDEN_RING_TRACKER_META || {
-      databaseVersion: "2026.06.21-01",
-      updatedAt: "2026-06-21",
+      databaseVersion: "2026.06.22-02",
+      updatedAt: "2026-06-22",
       itemCount: 0,
       dlcItemCount: 0,
       changeLog: []
@@ -9194,7 +9194,7 @@
     }
 
     const regionImageRequests = new Map();
-    const regionImageCacheVersion = "2026-06-22-fandom-retry-images-1";
+    const regionImageCacheVersion = "2026-06-22-fandom-retry-images-2";
     const regionImageTitleAliases = {
       "Все локации": [],
       "Звездные пустоши": ["Звёздные пустоши", "Звездные пустоши"],
@@ -9369,7 +9369,7 @@
     }
 
     const itemIconRequests = new Map();
-    const itemIconCacheVersion = "2026-06-22-fandom-retry-images-1";
+    const itemIconCacheVersion = "2026-06-22-fandom-retry-images-2";
     let itemIconObserver = null;
 
     function saveItemIcons() {
@@ -10847,6 +10847,32 @@
 
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
+        const appShellVersion = "2026.06.22-02";
+        const appShellVersionKey = "elden-ring-app-shell-version";
+        const storedShellVersion = localStorage.getItem(appShellVersionKey);
+        if (storedShellVersion !== appShellVersion) {
+          localStorage.setItem(appShellVersionKey, appShellVersion);
+          Promise.all([
+            navigator.serviceWorker.getRegistrations().then(registrations =>
+              Promise.all(registrations.map(registration => registration.unregister()))
+            ),
+            "caches" in window
+              ? caches.keys().then(keys =>
+                  Promise.all(
+                    keys
+                      .filter(key => key.startsWith("elden-ring-tracker-"))
+                      .map(key => caches.delete(key))
+                  )
+                )
+              : Promise.resolve()
+          ]).then(() => {
+            const cleanUrl = new URL(window.location.href);
+            cleanUrl.searchParams.set("pwa", appShellVersion);
+            window.location.replace(cleanUrl.toString());
+          });
+          return;
+        }
+
         let reloadForUpdate = false;
         const serviceWorkerUrl = `./sw.js?v=${encodeURIComponent(trackerMeta.databaseVersion)}`;
         navigator.serviceWorker.register(serviceWorkerUrl, { updateViaCache: "none" })
