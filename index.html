@@ -316,7 +316,7 @@
 
     .topbar {
       display: grid;
-      grid-template-columns: minmax(260px, 1fr) minmax(360px, 680px) auto auto auto auto;
+      grid-template-columns: minmax(260px, 1fr) minmax(360px, 680px) auto auto auto;
       align-items: center;
       gap: 20px;
       padding: 18px 24px;
@@ -326,6 +326,10 @@
       position: sticky;
       top: 0;
       z-index: 20;
+    }
+
+    .topbar.install-available {
+      grid-template-columns: minmax(260px, 1fr) minmax(360px, 680px) auto auto auto auto;
     }
 
     .brand {
@@ -1474,7 +1478,8 @@
     }
 
     @media (max-width: 1100px) {
-      .topbar {
+      .topbar,
+      .topbar.install-available {
         grid-template-columns: 1fr;
       }
 
@@ -1512,14 +1517,22 @@
       }
 
       .topbar {
+        grid-template-columns: minmax(0, 1fr) 44px;
+        grid-template-areas:
+          "brand brand"
+          "search theme"
+          "stats stats";
+        align-items: center;
+        padding: 12px;
+        gap: 10px;
+      }
+
+      .topbar.install-available {
         grid-template-columns: minmax(0, 1fr) 44px 44px;
         grid-template-areas:
           "brand brand brand"
           "search install theme"
           "stats stats stats";
-        align-items: center;
-        padding: 12px;
-        gap: 10px;
       }
 
       .brand {
@@ -10791,24 +10804,30 @@
   <script>
     let deferredInstallPrompt = null;
     const installButton = document.getElementById("install-btn");
+    const topbar = document.querySelector(".topbar");
 
     window.addEventListener("beforeinstallprompt", event => {
       event.preventDefault();
       deferredInstallPrompt = event;
       installButton?.classList.add("is-visible");
+      topbar?.classList.add("install-available");
     });
 
     installButton?.addEventListener("click", async () => {
       if (!deferredInstallPrompt) return;
       deferredInstallPrompt.prompt();
       const { outcome } = await deferredInstallPrompt.userChoice;
-      if (outcome === "accepted") installButton.classList.remove("is-visible");
+      if (outcome === "accepted") {
+        installButton.classList.remove("is-visible");
+        topbar?.classList.remove("install-available");
+      }
       deferredInstallPrompt = null;
     });
 
     window.addEventListener("appinstalled", () => {
       deferredInstallPrompt = null;
       installButton?.classList.remove("is-visible");
+      topbar?.classList.remove("install-available");
     });
 
     if ("serviceWorker" in navigator) {
