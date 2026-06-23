@@ -814,42 +814,6 @@
         var(--panel);
     }
 
-    .region-head > :not(.region-bg) {
-      position: relative;
-      z-index: 2;
-    }
-
-    .region-bg {
-      position: absolute;
-      inset: 0;
-      z-index: 0;
-      background-position: center;
-      background-size: cover;
-      opacity: 0;
-      transform: scale(1.02);
-      transition: opacity .5s ease, transform .5s ease;
-      pointer-events: none;
-    }
-
-    .region-bg::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background:
-        linear-gradient(0deg, rgba(var(--theme-black-rgb), .85), rgba(var(--theme-black-rgb), .2)),
-        linear-gradient(90deg, rgba(var(--theme-bg-primary-rgb), .72), rgba(var(--theme-bg-primary-rgb), .22));
-    }
-
-    .region-bg.current,
-    .region-bg.next.is-visible {
-      opacity: 1;
-      transform: scale(1);
-    }
-
-    .region-head.has-image {
-      background: var(--panel);
-    }
-
     .region-head h2 {
       margin: 0;
       font-family: Georgia, "Times New Roman", serif;
@@ -1905,8 +1869,6 @@
       <section class="content">
         <button class="mobile-back" type="button" data-mobile-back="regions">← Назад</button>
         <div class="region-head">
-          <div class="region-bg current" id="regionBgCurrent"></div>
-          <div class="region-bg next" id="regionBgNext"></div>
           <h2 id="regionTitle"></h2>
           <div class="tabs-label">Категории предметов</div>
           <div id="tabs" class="tabs"></div>
@@ -1929,11 +1891,11 @@
     <input id="userDataInput" class="hidden-input" type="file" accept="application/json">
   </div>
 
-  <script src="tracker-data.js?v=20260622-04"></script>
+  <script src="tracker-data.js?v=20260623-01"></script>
   <script>
     const trackerMeta = window.ELDEN_RING_TRACKER_META || {
-      databaseVersion: "2026.06.22-04",
-      updatedAt: "2026-06-22",
+      databaseVersion: "2026.06.23-01",
+      updatedAt: "2026-06-23",
       itemCount: 0,
       dlcItemCount: 0,
       changeLog: []
@@ -8396,16 +8358,6 @@
         writeJson("elden-ring-deleted-regions", deletedRegions.filter(region => !staleRegions.has(region)));
       }
 
-      const regionImages = readJson("elden-ring-region-images", {});
-      if (regionImages && typeof regionImages === "object" && !Array.isArray(regionImages)) {
-        Object.keys(regionImages).forEach(region => {
-          const target = redirectRegion(region);
-          if (target !== region && !regionImages[target]) regionImages[target] = regionImages[region];
-          if (target !== region) delete regionImages[region];
-        });
-        writeJson("elden-ring-region-images", regionImages);
-      }
-
       const customItems = readJson("elden-ring-route-custom-items", []);
       if (Array.isArray(customItems)) {
         customItems.forEach(item => {
@@ -8426,6 +8378,8 @@
     cleanRemovedRegionStorage();
     localStorage.removeItem("elden-ring-item-icons");
     localStorage.removeItem("elden-ring-item-icons-version");
+    localStorage.removeItem("elden-ring-region-images");
+    localStorage.removeItem("elden-ring-region-images-version");
 
     const state = {
       region: "Все локации",
@@ -8444,7 +8398,6 @@
       addingRegion: false,
       editingRegion: false,
       collapsedRegionSections: JSON.parse(localStorage.getItem("elden-ring-collapsed-region-sections") || "{}"),
-      regionImages: JSON.parse(localStorage.getItem("elden-ring-region-images") || "{}"),
       playerNotes: JSON.parse(localStorage.getItem("elden-ring-player-notes") || "{}"),
       customRegions: JSON.parse(localStorage.getItem("elden-ring-custom-regions") || "[]"),
       regionEdits: JSON.parse(localStorage.getItem("elden-ring-region-edits") || "{}"),
@@ -8481,8 +8434,6 @@
       source: document.querySelector("#sourceFilter"),
       regionHead: document.querySelector(".region-head"),
       regionTitle: document.querySelector("#regionTitle"),
-      regionBgCurrent: document.querySelector("#regionBgCurrent"),
-      regionBgNext: document.querySelector("#regionBgNext"),
       doneCount: document.querySelector("#doneCount"),
       totalCount: document.querySelector("#totalCount"),
       percentCount: document.querySelector("#percentCount"),
@@ -9146,61 +9097,6 @@
       saveCollapsedRegionSections();
     }
 
-    const regionImageRequests = new Map();
-    const regionImageCacheVersion = "2026-06-22-fandom-retry-images-2";
-    const regionImageTitleAliases = {
-      "Все локации": [],
-      "Звездные пустоши": ["Звёздные пустоши", "Звездные пустоши"],
-      "Крепость круглого стола": ["Крепость Круглого стола", "Крепость круглого стола"],
-      "Низовье глубокого корня": ["Низовье Глубокого Корня", "Низовье глубокого корня"],
-      "Озерная Лиурния": ["Озёрная Лиурния", "Озерная Лиурния"],
-      "Святое древо Микеллы": ["Святое Древо Микеллы", "Святое древо Микеллы"],
-      "Равнина надгробий": ["Равнина Надгробий", "Равнина надгробий"],
-      "Лейнделл, столица королевства": ["Лейнделл, столица королевства"],
-      "Разрушающийся Фарум-Азула": ["Разрушающийся Фарум-Азула"],
-      "DLC: Shadow of the Erdtree": ["Shadow of the Erdtree"]
-    };
-    let regionImageSwapTimer = 0;
-
-    function saveRegionImages() {
-      localStorage.setItem("elden-ring-region-images", JSON.stringify(state.regionImages));
-    }
-
-    function refreshRegionImageCache() {
-      if (localStorage.getItem("elden-ring-region-images-version") === regionImageCacheVersion) return;
-      Object.keys(state.regionImages).forEach(region => {
-        delete state.regionImages[region];
-      });
-      saveRegionImages();
-      localStorage.setItem("elden-ring-region-images-version", regionImageCacheVersion);
-    }
-
-    refreshRegionImageCache();
-
-    function fandomRegionTitles(region) {
-      const titles = regionImageTitleAliases[region] ?? [region];
-      return [...new Set(titles.filter(Boolean))];
-    }
-
-    function setBackgroundImage(element, url) {
-      element.style.backgroundImage = url ? `url("${String(url).replaceAll('"', '\\"')}")` : "";
-      element.dataset.image = url || "";
-    }
-
-    function normalizeRemoteImageUrl(url = "") {
-      const value = String(url || "").trim();
-      if (!value || !/^https?:\/\//i.test(value)) return value;
-      try {
-        const parsed = new URL(value);
-        if (parsed.hostname === "static.wikia.nocookie.net") {
-          parsed.searchParams.set("format", "original");
-        }
-        return parsed.toString();
-      } catch {
-        return value;
-      }
-    }
-
     function exportedDatabaseVersion() {
       const now = new Date();
       const date = [
@@ -9288,126 +9184,6 @@
       keys.forEach(key => localStorage.removeItem(key));
       alert("Локальні правки очищено. Трекер буде перезавантажено.");
       window.location.reload();
-    }
-
-    function remoteImageCandidates(url = "") {
-      const normalizedUrl = normalizeRemoteImageUrl(url);
-      if (!normalizedUrl) return [];
-      const candidates = [normalizedUrl];
-      try {
-        const original = new URL(normalizedUrl);
-        if (/\/revision\/latest\/scale-to-width-down\/\d+/i.test(original.pathname)) {
-          original.pathname = original.pathname.replace(/\/scale-to-width-down\/\d+/i, "");
-          candidates.push(original.toString());
-        }
-        [...candidates].forEach(candidate => {
-          const withoutFormat = new URL(candidate);
-          withoutFormat.searchParams.delete("format");
-          candidates.push(withoutFormat.toString());
-        });
-      } catch {
-        // Keep the normalized URL as the only candidate.
-      }
-      return [...new Set(candidates)];
-    }
-
-    async function preloadImage(url = "") {
-      for (const candidate of remoteImageCandidates(url)) {
-        const loaded = await new Promise(resolve => {
-          const image = new Image();
-          image.referrerPolicy = "no-referrer";
-          image.onload = () => resolve(true);
-          image.onerror = () => resolve(false);
-          image.src = candidate;
-        });
-        if (loaded) return candidate;
-      }
-      return "";
-    }
-
-    async function applyRegionImage(url = "") {
-      if (!els.regionHead || !els.regionBgCurrent || !els.regionBgNext) return false;
-      window.clearTimeout(regionImageSwapTimer);
-      if (!url) {
-        setBackgroundImage(els.regionBgCurrent, "");
-        setBackgroundImage(els.regionBgNext, "");
-        els.regionBgNext.classList.remove("is-visible");
-        els.regionHead.classList.remove("has-image");
-        return false;
-      }
-      const requestedRegion = state.region;
-      const loadedUrl = await preloadImage(url);
-      if (requestedRegion !== state.region) return false;
-      if (!loadedUrl) {
-        setBackgroundImage(els.regionBgCurrent, "");
-        setBackgroundImage(els.regionBgNext, "");
-        els.regionBgNext.classList.remove("is-visible");
-        els.regionHead.classList.remove("has-image");
-        return false;
-      }
-      if (els.regionBgCurrent.dataset.image === loadedUrl) {
-        els.regionHead.classList.add("has-image");
-        return true;
-      }
-      setBackgroundImage(els.regionBgNext, loadedUrl);
-      els.regionHead.classList.add("has-image");
-      els.regionBgNext.classList.add("is-visible");
-      regionImageSwapTimer = window.setTimeout(() => {
-        setBackgroundImage(els.regionBgCurrent, loadedUrl);
-        els.regionBgNext.classList.remove("is-visible");
-        setBackgroundImage(els.regionBgNext, "");
-      }, 500);
-      return true;
-    }
-
-    async function fetchRegionImage(region) {
-      const titles = fandomRegionTitles(region);
-      if (!titles.length || typeof fetch !== "function") return "";
-      for (const title of titles) {
-        const api = new URL("https://eldenring.fandom.com/ru/api.php");
-        api.searchParams.set("origin", "*");
-        api.searchParams.set("action", "query");
-        api.searchParams.set("format", "json");
-        api.searchParams.set("redirects", "1");
-        api.searchParams.set("prop", "pageimages");
-        api.searchParams.set("piprop", "thumbnail|original");
-        api.searchParams.set("pithumbsize", "1200");
-        api.searchParams.set("titles", title);
-        try {
-          const response = await fetch(api.toString());
-          if (!response.ok) continue;
-          const data = await response.json();
-          const pages = Object.values(data?.query?.pages || {});
-          const page = pages.find(entry => !entry.missing);
-          const image = page?.thumbnail?.source || page?.original?.source || "";
-          if (image) return image;
-        } catch {
-          // Try the next known Fandom title.
-        }
-      }
-      return "";
-    }
-
-    function updateRegionImage(region) {
-      const cached = state.regionImages[region];
-      if (cached) {
-        applyRegionImage(cached).then(loaded => {
-          if (loaded || state.region !== region) return;
-          delete state.regionImages[region];
-          saveRegionImages();
-          updateRegionImage(region);
-        });
-        return;
-      }
-      applyRegionImage("");
-      if (regionImageRequests.has(region)) return;
-      const request = fetchRegionImage(region).then(url => {
-        state.regionImages[region] = url || "";
-        saveRegionImages();
-        regionImageRequests.delete(region);
-        if (state.region === region) applyRegionImage(url);
-      });
-      regionImageRequests.set(region, request);
     }
 
     function filteredItems() {
@@ -9648,7 +9424,6 @@
         return `${escapeHtml(category)} <span class="tab-count">${stats.done}/${stats.total}</span>`;
       };
       els.regionTitle.textContent = state.region;
-      updateRegionImage(state.region);
       els.tabs.innerHTML = ["Все категории", ...visibleCategories].map(category => `
         <button class="tab ${state.category === category ? "active" : ""}" data-category="${escapeHtml(category)}">${categoryLabel(category)}</button>
       `).join("");
@@ -9943,7 +9718,6 @@
         els.detail.innerHTML = `
           <div class="detail-kicker">Локация</div>
           <h2>${escapeHtml(state.region)}</h2>
-          ${regionNote(state.region) ? `<div class="detail-text">${escapeHtml(regionNote(state.region))}</div>` : ""}
           <div class="mini-progress">
             <div class="section-title">Прогресс локации</div>
             <div class="bar" style="--value: ${regionStats.percent}%"><i></i></div>
@@ -10629,7 +10403,7 @@
 
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
-        const appShellVersion = "2026.06.22-04";
+        const appShellVersion = "2026.06.23-01";
         const appShellVersionKey = "elden-ring-app-shell-version";
         const storedShellVersion = localStorage.getItem(appShellVersionKey);
         if (storedShellVersion !== appShellVersion) {
