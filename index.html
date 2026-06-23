@@ -999,8 +999,6 @@
     }
 
     .check {
-      --magnet-x: 0px;
-      --magnet-y: 0px;
       width: 24px;
       height: 24px;
       display: grid;
@@ -1013,8 +1011,7 @@
       font-size: 14px;
       font-weight: 900;
       line-height: 1;
-      transform: translate(var(--magnet-x), var(--magnet-y));
-      transition: background-color .2s ease, border-color .2s ease, color .2s ease, transform .15s ease;
+      transition: background-color .2s ease, border-color .2s ease, color .2s ease, transform .2s ease;
     }
 
     .check-mark {
@@ -1026,17 +1023,17 @@
     }
 
     @keyframes checkBounce {
-      0% { transform: translate(var(--magnet-x), var(--magnet-y)) scale(1); }
-      30% { transform: translate(var(--magnet-x), var(--magnet-y)) scale(1.28); }
-      55% { transform: translate(var(--magnet-x), var(--magnet-y)) scale(.88); }
-      75% { transform: translate(var(--magnet-x), var(--magnet-y)) scale(1.10); }
-      100% { transform: translate(var(--magnet-x), var(--magnet-y)) scale(1.04); }
+      0% { transform: scale(1); }
+      30% { transform: scale(1.28); }
+      55% { transform: scale(.88); }
+      75% { transform: scale(1.10); }
+      100% { transform: scale(1.04); }
     }
 
     .step.done .check {
       border-color: var(--theme-done-check-border);
       background: var(--theme-done-check-bg);
-      transform: translate(var(--magnet-x), var(--magnet-y)) scale(1.04);
+      transform: scale(1.04);
       animation: checkBounce .35s ease both;
     }
 
@@ -1944,10 +1941,10 @@
     <input id="userDataInput" class="hidden-input" type="file" accept="application/json">
   </div>
 
-  <script src="tracker-data.js?v=20260623-04"></script>
+  <script src="tracker-data.js?v=20260623-05"></script>
   <script>
     const trackerMeta = window.ELDEN_RING_TRACKER_META || {
-      databaseVersion: "2026.06.23-04",
+      databaseVersion: "2026.06.23-05",
       updatedAt: "2026-06-23",
       itemCount: 0,
       dlcItemCount: 0,
@@ -9708,37 +9705,6 @@
 
     let revealRowsOnNextRender = false;
 
-    function bindMagneticChecks() {
-      if (isMobileLayout()) return;
-      els.route.querySelectorAll(".step").forEach(row => {
-        row.addEventListener("mousemove", event => {
-          const checkEl = row.querySelector(".check");
-          if (!checkEl || isMobileLayout()) return;
-          const rect = checkEl.getBoundingClientRect();
-          const cx = rect.left + rect.width / 2;
-          const cy = rect.top + rect.height / 2;
-          const dx = event.clientX - cx;
-          const dy = event.clientY - cy;
-          const distance = Math.sqrt(dx * dx + dy * dy);
-          if (distance > 0 && distance < 70) {
-            const pull = Math.max(0, (70 - distance) / 70);
-            const strength = 12 * pull;
-            checkEl.style.setProperty("--magnet-x", `${dx / distance * strength}px`);
-            checkEl.style.setProperty("--magnet-y", `${dy / distance * strength}px`);
-          } else {
-            checkEl.style.setProperty("--magnet-x", "0px");
-            checkEl.style.setProperty("--magnet-y", "0px");
-          }
-        });
-        row.addEventListener("mouseleave", () => {
-          const checkEl = row.querySelector(".check");
-          if (!checkEl) return;
-          checkEl.style.setProperty("--magnet-x", "0px");
-          checkEl.style.setProperty("--magnet-y", "0px");
-        });
-      });
-    }
-
     function revealRouteRows() {
       if (!revealRowsOnNextRender) return;
       revealRowsOnNextRender = false;
@@ -9820,7 +9786,6 @@
           </div>
         </section>
       `).join("");
-      bindMagneticChecks();
       revealRouteRows();
     }
 
@@ -10658,7 +10623,7 @@
 
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
-        const appShellVersion = "2026.06.23-04";
+        const appShellVersion = "2026.06.23-05";
         const appShellVersionKey = "elden-ring-app-shell-version";
         const storedShellVersion = localStorage.getItem(appShellVersionKey);
         if (storedShellVersion !== appShellVersion) {
