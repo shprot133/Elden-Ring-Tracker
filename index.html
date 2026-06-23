@@ -9893,6 +9893,7 @@
 
     let activeItemSwipe = null;
     let suppressItemClickUntil = 0;
+    let pendingItemSelectTimer = 0;
 
     function resetSwipedStep(step) {
       if (!step) return;
@@ -9986,6 +9987,8 @@
       const itemId = step.querySelector("[data-toggle]")?.dataset.toggle;
       if (!itemId) return;
       event.preventDefault();
+      window.clearTimeout(pendingItemSelectTimer);
+      pendingItemSelectTimer = 0;
       toggleCollectedItem(itemId, step);
     });
 
@@ -10137,15 +10140,20 @@
       }
 
       if (selectButton) {
-        state.selectedId = selectButton.dataset.select;
-        state.editing = false;
-        state.adding = false;
-        state.addingFromWiki = false;
-        state.addingRegion = false;
-        state.editingRegion = false;
-        render();
-        animateDetailIn();
-        setMobileView("detail", { pushHistory: true });
+        const selectedId = selectButton.dataset.select;
+        window.clearTimeout(pendingItemSelectTimer);
+        pendingItemSelectTimer = window.setTimeout(() => {
+          pendingItemSelectTimer = 0;
+          state.selectedId = selectedId;
+          state.editing = false;
+          state.adding = false;
+          state.addingFromWiki = false;
+          state.addingRegion = false;
+          state.editingRegion = false;
+          render();
+          animateDetailIn();
+          setMobileView("detail", { pushHistory: true });
+        }, 250);
         return;
       }
 
