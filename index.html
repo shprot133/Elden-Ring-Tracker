@@ -316,7 +316,7 @@
 
     .topbar {
       display: grid;
-      grid-template-columns: minmax(260px, 1fr) minmax(360px, 680px) auto auto auto;
+      grid-template-columns: minmax(260px, 1fr) minmax(360px, 680px) auto auto auto auto;
       align-items: center;
       gap: 20px;
       padding: 18px 24px;
@@ -329,7 +329,7 @@
     }
 
     .topbar.install-available {
-      grid-template-columns: minmax(260px, 1fr) minmax(360px, 680px) auto auto auto auto;
+      grid-template-columns: minmax(260px, 1fr) minmax(360px, 680px) auto auto auto auto auto;
     }
 
     .brand {
@@ -464,6 +464,25 @@
       background: rgba(var(--theme-bg-secondary-rgb), .86);
       font-size: 13px;
       font-weight: 800;
+    }
+
+    .sound-button {
+      width: 42px;
+      height: 38px;
+      display: inline-grid;
+      place-items: center;
+      color: var(--gold-2);
+      border: 1px solid rgba(var(--theme-accent-rgb), .34);
+      border-radius: var(--radius);
+      background: rgba(var(--theme-bg-secondary-rgb), .86);
+      font-size: 17px;
+      line-height: 1;
+    }
+
+    .sound-button:hover,
+    .sound-button[aria-pressed="false"] {
+      border-color: rgba(var(--theme-accent-strong-rgb), .58);
+      background: rgba(var(--theme-accent-rgb), .12);
     }
 
     .theme-button:hover,
@@ -1443,22 +1462,22 @@
       }
 
       .topbar {
-        grid-template-columns: minmax(0, 1fr) 44px;
+        grid-template-columns: minmax(0, 1fr) 44px 44px;
         grid-template-areas:
-          "brand brand"
-          "search theme"
-          "stats stats";
+          "brand brand brand"
+          "search sound theme"
+          "stats stats stats";
         align-items: center;
         padding: 12px;
         gap: 10px;
       }
 
       .topbar.install-available {
-        grid-template-columns: minmax(0, 1fr) 44px 44px;
+        grid-template-columns: minmax(0, 1fr) 44px 44px 44px;
         grid-template-areas:
-          "brand brand brand"
-          "search install theme"
-          "stats stats stats";
+          "brand brand brand brand"
+          "search install sound theme"
+          "stats stats stats stats";
       }
 
       .brand {
@@ -1488,6 +1507,12 @@
       .theme-switcher {
         grid-area: theme;
         justify-self: stretch;
+      }
+
+      .sound-button {
+        grid-area: sound;
+        width: 44px;
+        height: 42px;
       }
 
       .install-button {
@@ -1832,6 +1857,7 @@
         </div>
       </div>
       <button class="install-button" id="install-btn" type="button">⬇ Установить</button>
+      <button class="sound-button" type="button" data-sound-toggle aria-pressed="true" aria-label="Выключить звук" title="Выключить звук">🔊</button>
       <div class="theme-switcher" data-theme-switcher>
         <button class="theme-button" type="button" data-theme-toggle aria-expanded="false">Тема</button>
         <div class="theme-menu" role="menu" aria-label="Выбор темы оформления">
@@ -1892,10 +1918,10 @@
     <input id="userDataInput" class="hidden-input" type="file" accept="application/json">
   </div>
 
-  <script src="tracker-data.js?v=20260623-02"></script>
+  <script src="tracker-data.js?v=20260623-03"></script>
   <script>
     const trackerMeta = window.ELDEN_RING_TRACKER_META || {
-      databaseVersion: "2026.06.23-02",
+      databaseVersion: "2026.06.23-03",
       updatedAt: "2026-06-23",
       itemCount: 0,
       dlcItemCount: 0,
@@ -8429,6 +8455,7 @@
       themeSwitcher: document.querySelector("[data-theme-switcher]"),
       themeToggle: document.querySelector("[data-theme-toggle]"),
       themeOptions: document.querySelectorAll("[data-theme-choice]"),
+      soundToggle: document.querySelector("[data-sound-toggle]"),
       searchShell: document.querySelector(".search"),
       search: document.querySelector("#searchInput"),
       category: document.querySelector("#categoryFilter"),
@@ -8445,15 +8472,67 @@
     };
 
     const themeIds = new Set(["golden-order", "caria", "mohgwyn", "erdtree", "dragon", "shadow"]);
+    let soundEnabled = true;
+    let audioCtx = null;
+
+    try {
+      soundEnabled = localStorage.getItem("elden_ring_sound_enabled") !== "false";
+    } catch {
+      soundEnabled = true;
+    }
+
+    function updateSoundButton() {
+      if (!els.soundToggle) return;
+      els.soundToggle.textContent = soundEnabled ? "🔊" : "🔇";
+      els.soundToggle.setAttribute("aria-pressed", String(soundEnabled));
+      const label = soundEnabled ? "Выключить звук" : "Включить звук";
+      els.soundToggle.setAttribute("aria-label", label);
+      els.soundToggle.title = label;
+    }
+
+    function playTone(freq, duration, type = "sine", volume = 0.1) {
+      if (!soundEnabled) return;
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) return;
+      try {
+        audioCtx ||= new AudioContextClass();
+        if (audioCtx.state === "suspended") audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(volume, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch {
+        // Sound is optional and must never interrupt tracker interactions.
+      }
+    }
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      try {
+        localStorage.setItem("elden_ring_sound_enabled", String(soundEnabled));
+      } catch {
+        // The preference remains active for the current session.
+      }
+      updateSoundButton();
+      if (soundEnabled) playTone(500, 0.04, "triangle", 0.03);
+    }
 
     function currentTheme() {
       const theme = document.documentElement.dataset.theme || "golden-order";
       return themeIds.has(theme) ? theme : "golden-order";
     }
 
-    function closeThemeMenu() {
+    function closeThemeMenu(withSound = false) {
+      const wasOpen = Boolean(els.themeSwitcher?.classList.contains("open"));
       els.themeSwitcher?.classList.remove("open");
       els.themeToggle?.setAttribute("aria-expanded", "false");
+      if (withSound && wasOpen) playTone(500, 0.04, "triangle", 0.03);
     }
 
     function updateThemeMenu() {
@@ -8463,7 +8542,7 @@
       });
     }
 
-    function applyTheme(theme) {
+    function applyTheme(theme, withSound = false) {
       const nextTheme = themeIds.has(theme) ? theme : "golden-order";
       document.documentElement.dataset.theme = nextTheme;
       try {
@@ -8472,7 +8551,7 @@
         // The tracker still works if browser storage is unavailable.
       }
       updateThemeMenu();
-      closeThemeMenu();
+      closeThemeMenu(withSound);
     }
 
     const mobileViewIds = new Set(["regions", "items", "detail"]);
@@ -8547,6 +8626,7 @@
     }
 
     updateThemeMenu();
+    updateSoundButton();
     setMobileView("regions", { replaceHistory: true });
 
     function escapeHtml(value = "") {
@@ -9362,6 +9442,55 @@
       return [...list].sort((a, b) => a.name.localeCompare(b.name, "ru"));
     }
 
+    const displayedProgressValues = new Map();
+    const progressAnimationFrames = new WeakMap();
+
+    function animateNumber(element, from, to, duration = 500) {
+      if (!element) return;
+      const previousFrame = progressAnimationFrames.get(element);
+      if (previousFrame) cancelAnimationFrame(previousFrame);
+      if (from === to) {
+        element.textContent = `${to}%`;
+        return;
+      }
+      const start = performance.now();
+      function tick(now) {
+        const progress = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const current = Math.round(from + (to - from) * eased);
+        element.textContent = `${current}%`;
+        if (progress < 1) {
+          progressAnimationFrames.set(element, requestAnimationFrame(tick));
+        } else {
+          progressAnimationFrames.delete(element);
+        }
+      }
+      progressAnimationFrames.set(element, requestAnimationFrame(tick));
+    }
+
+    function currentProgressValue(key) {
+      if (key === "overall") return completion(items).percent;
+      if (key.startsWith("region:")) return completion(regionItems(key.slice(7))).percent;
+      if (key.startsWith("detail:")) return completion(regionItems(key.slice(7))).percent;
+      if (key.startsWith("section:")) {
+        const sectionId = key.slice(8);
+        const regions = visibleRegions().filter(region => sectionId === "dlc" ? isDlcRegion(region) : !isDlcRegion(region));
+        return completion(sectionItems(regions)).percent;
+      }
+      return 0;
+    }
+
+    function animateProgressNumbers(useCurrentData = false) {
+      document.querySelectorAll("[data-progress-value]").forEach(element => {
+        const key = element.dataset.progressKey || "progress";
+        const to = useCurrentData ? currentProgressValue(key) : Number(element.dataset.progressValue) || 0;
+        element.dataset.progressValue = to;
+        const from = displayedProgressValues.has(key) ? displayedProgressValues.get(key) : 0;
+        animateNumber(element, from, to);
+        displayedProgressValues.set(key, to);
+      });
+    }
+
     function renderControls() {
       const categories = ["Все категории", ...unique(items.map(item => item.category))];
       const sources = ["Все типы", ...unique(items.map(item => item.source))];
@@ -9381,7 +9510,7 @@
         return `
           <button class="region-btn ${state.region === region ? "active" : ""}" data-region="${escapeHtml(region)}">
             <span>${escapeHtml(region)}</span>
-            <strong>${stats.total ? `${stats.percent}%` : "..."}</strong>
+            <strong data-progress-key="region:${escapeHtml(region)}" data-progress-value="${stats.percent}">${stats.total ? `${stats.percent}%` : "..."}</strong>
             <span class="region-meta">
               <span class="bar" style="--value: ${stats.percent}%"><i></i></span>
               ${stats.done}/${stats.total}
@@ -9404,7 +9533,7 @@
             <button class="region-section-toggle" data-region-section="${escapeHtml(section.id)}">
               <span class="section-arrow">${collapsed ? "▸" : "▾"}</span>
               <span>${escapeHtml(section.title)}</span>
-              <span class="section-progress">${stats.percent}% · ${stats.done}/${stats.total}</span>
+              <span class="section-progress"><span data-progress-key="section:${escapeHtml(section.id)}" data-progress-value="${stats.percent}">${stats.percent}%</span> · ${stats.done}/${stats.total}</span>
             </button>
             ${collapsed ? "" : `<div class="region-section-items">${section.regions.map(renderRegionButton).join("")}</div>`}
           </section>
@@ -9720,7 +9849,7 @@
           <div class="detail-kicker">Локация</div>
           <h2>${escapeHtml(state.region)}</h2>
           <div class="mini-progress">
-            <div class="section-title">Прогресс локации</div>
+            <div class="section-title"><span>Прогресс локации</span><strong data-progress-key="detail:${escapeHtml(state.region)}" data-progress-value="${regionStats.percent}">${regionStats.percent}%</strong></div>
             <div class="bar" style="--value: ${regionStats.percent}%"><i></i></div>
             <p>${regionStats.done} из ${regionStats.total} предметов отмечены как собранные.</p>
           </div>
@@ -9805,7 +9934,7 @@
           ${state.editMode ? `<button class="secondary" data-delete-item="${escapeHtml(selected.id)}">Удалить предмет</button>` : ""}
         </div>
         <div class="mini-progress">
-          <div class="section-title">Прогресс локации</div>
+          <div class="section-title"><span>Прогресс локации</span><strong data-progress-key="detail:${escapeHtml(selectedParentRegion)}" data-progress-value="${regionStats.percent}">${regionStats.percent}%</strong></div>
           <div class="bar" style="--value: ${regionStats.percent}%"><i></i></div>
           <p>${escapeHtml(selectedParentRegion)}: ${regionStats.done} из ${regionStats.total} предметов отмечены как собранные.</p>
         </div>
@@ -9827,7 +9956,8 @@
       const stats = completion(items);
       els.doneCount.textContent = stats.done;
       els.totalCount.textContent = stats.total;
-      els.percentCount.textContent = `${stats.percent}%`;
+      els.percentCount.dataset.progressKey = "overall";
+      els.percentCount.dataset.progressValue = stats.percent;
     }
 
     function renderEditMode() {
@@ -9847,6 +9977,7 @@
       renderRoute();
       renderDetail();
       renderStats();
+      animateProgressNumbers();
     }
 
     function animateRouteRender(applyState) {
@@ -9881,10 +10012,12 @@
       const done = !state.done.has(id);
       done ? state.done.add(id) : state.done.delete(id);
       saveDone();
+      playTone(done ? 660 : 330, done ? 0.15 : 0.1, "sine", done ? 0.08 : 0.06);
+      animateProgressNumbers(true);
       const step = trigger?.closest(".step");
       if (step) {
         setStepDoneVisual(step, done);
-        window.setTimeout(render, 300);
+        window.setTimeout(render, 500);
       } else {
         render();
         animateDetailIn();
@@ -10020,6 +10153,7 @@
       const themeToggleButton = event.target.closest("[data-theme-toggle]");
       const themeChoiceButton = event.target.closest("[data-theme-choice]");
       const themeSwitcher = event.target.closest("[data-theme-switcher]");
+      const soundToggleButton = event.target.closest("[data-sound-toggle]");
       const addItemButton = event.target.closest("[data-add-item]");
       const wikiImportButton = event.target.closest("[data-wiki-import]");
       const cancelAddButton = event.target.closest("[data-cancel-add]");
@@ -10037,7 +10171,7 @@
       }
 
       if (!themeSwitcher && isMobileLayout() && els.themeSwitcher?.classList.contains("open")) {
-        closeThemeMenu();
+        closeThemeMenu(true);
         return;
       }
 
@@ -10049,15 +10183,21 @@
       if (themeToggleButton) {
         const isOpen = els.themeSwitcher?.classList.toggle("open");
         els.themeToggle?.setAttribute("aria-expanded", String(Boolean(isOpen)));
+        playTone(500, 0.04, "triangle", 0.03);
         return;
       }
 
       if (themeChoiceButton) {
-        applyTheme(themeChoiceButton.dataset.themeChoice);
+        applyTheme(themeChoiceButton.dataset.themeChoice, true);
         return;
       }
 
-      if (!themeSwitcher) closeThemeMenu();
+      if (soundToggleButton) {
+        toggleSound();
+        return;
+      }
+
+      if (!themeSwitcher) closeThemeMenu(true);
 
       if (regionSectionButton) {
         toggleRegionSection(regionSectionButton.dataset.regionSection);
@@ -10102,6 +10242,7 @@
 
       if (regionButton) {
         const nextRegion = regionButton.dataset.region;
+        playTone(440, 0.05, "triangle", 0.04);
         animateRouteRender(() => {
           state.region = nextRegion;
           state.editing = false;
@@ -10144,6 +10285,7 @@
         window.clearTimeout(pendingItemSelectTimer);
         pendingItemSelectTimer = window.setTimeout(() => {
           pendingItemSelectTimer = 0;
+          playTone(550, 0.08, "sine", 0.05);
           state.selectedId = selectedId;
           state.editing = false;
           state.adding = false;
@@ -10421,7 +10563,7 @@
 
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
-        const appShellVersion = "2026.06.23-02";
+        const appShellVersion = "2026.06.23-03";
         const appShellVersionKey = "elden-ring-app-shell-version";
         const storedShellVersion = localStorage.getItem(appShellVersionKey);
         if (storedShellVersion !== appShellVersion) {
