@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "elden-ring-tracker-";
-const DATA_URL = "./tracker-data.js?v=20260623-01";
+const DATA_URL = "./tracker-data.js?v=20260623-02";
 const ASSETS = [
   "./",
   "./index.html",

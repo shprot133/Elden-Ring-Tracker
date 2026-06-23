@@ -948,6 +948,7 @@
       background: rgba(var(--theme-bg-secondary-rgb), .82);
       box-shadow: 0 10px 26px var(--shadow);
       transition: background .3s ease, background-color .3s ease, border-color .3s ease, opacity .3s ease, transform .18s ease;
+      user-select: none;
     }
 
     .step:hover {
@@ -1891,10 +1892,10 @@
     <input id="userDataInput" class="hidden-input" type="file" accept="application/json">
   </div>
 
-  <script src="tracker-data.js?v=20260623-01"></script>
+  <script src="tracker-data.js?v=20260623-02"></script>
   <script>
     const trackerMeta = window.ELDEN_RING_TRACKER_META || {
-      databaseVersion: "2026.06.23-01",
+      databaseVersion: "2026.06.23-02",
       updatedAt: "2026-06-23",
       itemCount: 0,
       dlcItemCount: 0,
@@ -9979,6 +9980,15 @@
       resetSwipedStep(step);
     }, { passive: true });
 
+    els.route.addEventListener("dblclick", event => {
+      const step = event.target.closest(".step");
+      if (!step || event.target.closest("a, [data-toggle]")) return;
+      const itemId = step.querySelector("[data-toggle]")?.dataset.toggle;
+      if (!itemId) return;
+      event.preventDefault();
+      toggleCollectedItem(itemId, step);
+    });
+
     document.addEventListener("click", event => {
       if (Date.now() >= suppressItemClickUntil || !event.target.closest(".step")) return;
       event.preventDefault();
@@ -10403,7 +10413,7 @@
 
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
-        const appShellVersion = "2026.06.23-01";
+        const appShellVersion = "2026.06.23-02";
         const appShellVersionKey = "elden-ring-app-shell-version";
         const storedShellVersion = localStorage.getItem(appShellVersionKey);
         if (storedShellVersion !== appShellVersion) {
