@@ -999,6 +999,8 @@
     }
 
     .check {
+      --magnet-x: 0px;
+      --magnet-y: 0px;
       width: 24px;
       height: 24px;
       display: grid;
@@ -1011,7 +1013,8 @@
       font-size: 14px;
       font-weight: 900;
       line-height: 1;
-      transition: background-color .2s ease, border-color .2s ease, color .2s ease, transform .2s ease;
+      transform: translate(var(--magnet-x), var(--magnet-y));
+      transition: background-color .2s ease, border-color .2s ease, color .2s ease, transform .15s ease;
     }
 
     .check-mark {
@@ -1023,23 +1026,46 @@
     }
 
     @keyframes checkBounce {
-      0% { transform: scale(1); }
-      30% { transform: scale(1.28); }
-      55% { transform: scale(.88); }
-      75% { transform: scale(1.10); }
-      100% { transform: scale(1.04); }
+      0% { transform: translate(var(--magnet-x), var(--magnet-y)) scale(1); }
+      30% { transform: translate(var(--magnet-x), var(--magnet-y)) scale(1.28); }
+      55% { transform: translate(var(--magnet-x), var(--magnet-y)) scale(.88); }
+      75% { transform: translate(var(--magnet-x), var(--magnet-y)) scale(1.10); }
+      100% { transform: translate(var(--magnet-x), var(--magnet-y)) scale(1.04); }
     }
 
     .step.done .check {
       border-color: var(--theme-done-check-border);
       background: var(--theme-done-check-bg);
-      transform: scale(1.04);
+      transform: translate(var(--magnet-x), var(--magnet-y)) scale(1.04);
       animation: checkBounce .35s ease both;
     }
 
     .step.done .check-mark {
       opacity: 1;
       transform: scale(1) rotate(0deg);
+    }
+
+    .collect-rune {
+      position: absolute;
+      left: 4px;
+      top: 4px;
+      z-index: 3;
+      color: var(--gold-2);
+      font-size: 13px;
+      line-height: 1;
+      pointer-events: none;
+      animation: runeFloat .7s ease-out forwards;
+    }
+
+    @keyframes runeFloat {
+      0% { opacity: 0; transform: translate(0, 0) scale(.5) rotate(0deg); }
+      20% { opacity: 1; transform: translate(4px, -6px) scale(1.2) rotate(15deg); }
+      100% { opacity: 0; transform: translate(26px, -30px) scale(1.3) rotate(35deg); }
+    }
+
+    @keyframes rowReveal {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .step-main {
@@ -1918,10 +1944,10 @@
     <input id="userDataInput" class="hidden-input" type="file" accept="application/json">
   </div>
 
-  <script src="tracker-data.js?v=20260623-03"></script>
+  <script src="tracker-data.js?v=20260623-04"></script>
   <script>
     const trackerMeta = window.ELDEN_RING_TRACKER_META || {
-      databaseVersion: "2026.06.23-03",
+      databaseVersion: "2026.06.23-04",
       updatedAt: "2026-06-23",
       itemCount: 0,
       dlcItemCount: 0,
@@ -9680,6 +9706,56 @@
       `;
     }
 
+    let revealRowsOnNextRender = false;
+
+    function bindMagneticChecks() {
+      if (isMobileLayout()) return;
+      els.route.querySelectorAll(".step").forEach(row => {
+        row.addEventListener("mousemove", event => {
+          const checkEl = row.querySelector(".check");
+          if (!checkEl || isMobileLayout()) return;
+          const rect = checkEl.getBoundingClientRect();
+          const cx = rect.left + rect.width / 2;
+          const cy = rect.top + rect.height / 2;
+          const dx = event.clientX - cx;
+          const dy = event.clientY - cy;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          if (distance > 0 && distance < 70) {
+            const pull = Math.max(0, (70 - distance) / 70);
+            const strength = 12 * pull;
+            checkEl.style.setProperty("--magnet-x", `${dx / distance * strength}px`);
+            checkEl.style.setProperty("--magnet-y", `${dy / distance * strength}px`);
+          } else {
+            checkEl.style.setProperty("--magnet-x", "0px");
+            checkEl.style.setProperty("--magnet-y", "0px");
+          }
+        });
+        row.addEventListener("mouseleave", () => {
+          const checkEl = row.querySelector(".check");
+          if (!checkEl) return;
+          checkEl.style.setProperty("--magnet-x", "0px");
+          checkEl.style.setProperty("--magnet-y", "0px");
+        });
+      });
+    }
+
+    function revealRouteRows() {
+      if (!revealRowsOnNextRender) return;
+      revealRowsOnNextRender = false;
+      els.route.querySelectorAll(".step").forEach((row, index) => {
+        const delay = Math.min(index * 0.04, 0.5);
+        row.style.opacity = "0";
+        row.style.animation = `rowReveal .35s ease ${delay}s forwards`;
+        const finishReveal = event => {
+          if (event.animationName !== "rowReveal") return;
+          row.style.removeProperty("opacity");
+          row.style.removeProperty("animation");
+          row.removeEventListener("animationend", finishReveal);
+        };
+        row.addEventListener("animationend", finishReveal);
+      });
+    }
+
     function renderRoute() {
       const list = orderedItems(filteredItems());
       const grouped = list.reduce((acc, item) => {
@@ -9708,6 +9784,7 @@
             ` : ""}
           </div>
         `;
+        revealRowsOnNextRender = false;
         return;
       }
 
@@ -9743,6 +9820,8 @@
           </div>
         </section>
       `).join("");
+      bindMagneticChecks();
+      revealRouteRows();
     }
 
     function renderDetail() {
@@ -10008,16 +10087,30 @@
       }
     }
 
+    function spawnRune(checkEl) {
+      if (!checkEl) return;
+      const rune = document.createElement("span");
+      rune.className = "collect-rune";
+      rune.textContent = "✦";
+      const row = checkEl.closest(".step") || checkEl.parentElement;
+      if (!row) return;
+      row.style.position = "relative";
+      row.appendChild(rune);
+      window.setTimeout(() => rune.remove(), 700);
+    }
+
     function toggleCollectedItem(id, trigger) {
       const done = !state.done.has(id);
       done ? state.done.add(id) : state.done.delete(id);
       saveDone();
       playTone(done ? 660 : 330, done ? 0.15 : 0.1, "sine", done ? 0.08 : 0.06);
       animateProgressNumbers(true);
-      const step = trigger?.closest(".step");
+      const step = trigger?.closest(".step")
+        || [...els.route.querySelectorAll(".step")].find(row => row.querySelector("[data-toggle]")?.dataset.toggle === id);
       if (step) {
         setStepDoneVisual(step, done);
-        window.setTimeout(render, 500);
+        if (done) spawnRune(step.querySelector(".check"));
+        window.setTimeout(render, 700);
       } else {
         render();
         animateDetailIn();
@@ -10244,6 +10337,7 @@
         const nextRegion = regionButton.dataset.region;
         playTone(440, 0.05, "triangle", 0.04);
         animateRouteRender(() => {
+          revealRowsOnNextRender = true;
           state.region = nextRegion;
           state.editing = false;
           state.adding = false;
@@ -10257,6 +10351,7 @@
       }
 
       if (categoryButton) {
+        revealRowsOnNextRender = true;
         state.category = categoryButton.dataset.category;
         state.editing = false;
         state.adding = false;
@@ -10563,7 +10658,7 @@
 
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
-        const appShellVersion = "2026.06.23-03";
+        const appShellVersion = "2026.06.23-04";
         const appShellVersionKey = "elden-ring-app-shell-version";
         const storedShellVersion = localStorage.getItem(appShellVersionKey);
         if (storedShellVersion !== appShellVersion) {
