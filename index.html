@@ -739,6 +739,31 @@
       box-shadow: inset 3px 0 12px rgba(var(--theme-accent-strong-rgb), .07);
     }
 
+    @keyframes almostGlow {
+      0%, 100% {
+        box-shadow: inset 3px 0 12px rgba(var(--theme-accent-strong-rgb), .05), 0 0 0 0 rgba(var(--theme-accent-rgb), 0);
+      }
+      50% {
+        box-shadow: inset 3px 0 12px rgba(var(--theme-accent-strong-rgb), .08), 0 0 0 5px rgba(var(--theme-accent-rgb), .18);
+      }
+    }
+
+    .region-btn.almost-done {
+      animation: almostGlow 2s ease-in-out infinite;
+      border-color: var(--theme-accent);
+    }
+
+    .region-name {
+      min-width: 0;
+    }
+
+    .almost-remaining {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
     .region-meta {
       grid-column: 1 / -1;
       color: var(--muted);
@@ -848,6 +873,28 @@
 
     .ring-complete {
       animation: ringPulse100 1s ease 2;
+    }
+
+    @keyframes tagFlash {
+      0% {
+        transform: scale(1);
+        background: var(--theme-bg-tertiary);
+        color: var(--theme-text-secondary);
+      }
+      40% {
+        transform: scale(1.15);
+        background: var(--theme-done-check-bg);
+        color: var(--theme-done-text);
+      }
+      100% {
+        transform: scale(1);
+        background: var(--theme-done-check-bg);
+        color: var(--theme-done-text);
+      }
+    }
+
+    .category-tag.just-completed {
+      animation: tagFlash .5s ease forwards;
     }
 
     .sidebar-actions {
@@ -2074,10 +2121,10 @@
     <input id="userDataInput" class="hidden-input" type="file" accept="application/json">
   </div>
 
-  <script src="tracker-data.js?v=20260623-06"></script>
+  <script src="tracker-data.js?v=20260623-07"></script>
   <script>
     const trackerMeta = window.ELDEN_RING_TRACKER_META || {
-      databaseVersion: "2026.06.23-06",
+      databaseVersion: "2026.06.23-07",
       updatedAt: "2026-06-23",
       itemCount: 0,
       dlcItemCount: 0,
@@ -9703,6 +9750,67 @@
       });
     }
 
+    function remainingInRegion(region) {
+      const stats = completion(regionItems(region));
+      return {
+        ...stats,
+        remaining: Math.max(0, stats.total - stats.done)
+      };
+    }
+
+    function almostDoneMarkup(remaining) {
+      return `<span class="almost-remaining"> — осталось ${remaining}</span>`;
+    }
+
+    function isAlmostDoneRegionStats(stats) {
+      return stats.total > 0 && stats.remaining >= 1 && stats.remaining <= 3;
+    }
+
+    function updateAlmostDoneRegionButton(region) {
+      if (!region || region === "Все локации") return;
+      const button = [...document.querySelectorAll("[data-region]")]
+        .find(element => element.dataset.region === region);
+      if (!button) return;
+      const stats = remainingInRegion(region);
+      const isAlmost = isAlmostDoneRegionStats(stats);
+      button.classList.toggle("almost-done", isAlmost);
+      const name = button.querySelector(".region-name") || button.querySelector("span");
+      if (!name) return;
+      let remaining = name.querySelector(".almost-remaining");
+      if (isAlmost) {
+        if (!remaining) {
+          remaining = document.createElement("span");
+          remaining.className = "almost-remaining";
+          name.appendChild(remaining);
+        }
+        remaining.textContent = ` — осталось ${stats.remaining}`;
+      } else {
+        remaining?.remove();
+      }
+    }
+
+    function categoryItemsForHeader(category, region = state.region) {
+      const list = regionItems(region);
+      return category === "Все категории" ? list : list.filter(item => item.category === category);
+    }
+
+    function isHeaderCategoryComplete(category, region = state.region) {
+      const stats = completion(categoryItemsForHeader(category, region));
+      return stats.total > 0 && stats.done === stats.total;
+    }
+
+    function flashCompletedCategory(category) {
+      if (!category) return;
+      const button = [...els.tabs.querySelectorAll("[data-category]")]
+        .find(element => element.dataset.category === category);
+      if (!button) return;
+      button.classList.remove("just-completed");
+      void button.offsetWidth;
+      button.classList.add("just-completed");
+      button.addEventListener("animationend", () => button.classList.remove("just-completed"), { once: true });
+      window.setTimeout(() => button.classList.remove("just-completed"), 650);
+    }
+
     function renderControls() {
       const categories = ["Все категории", ...unique(items.map(item => item.category))];
       const sources = ["Все типы", ...unique(items.map(item => item.source))];
@@ -9718,10 +9826,11 @@
       const regions = allRegions();
       els.regionCount.textContent = `${regions.length - 1}`;
       const renderRegionButton = region => {
-        const stats = completion(regionItems(region));
+        const stats = remainingInRegion(region);
+        const isAlmostDone = region !== "Все локации" && isAlmostDoneRegionStats(stats);
         return `
-          <button class="region-btn ${state.region === region ? "active" : ""}" data-region="${escapeHtml(region)}">
-            <span>${escapeHtml(region)}</span>
+          <button class="region-btn ${state.region === region ? "active" : ""} ${isAlmostDone ? "almost-done" : ""}" data-region="${escapeHtml(region)}">
+            <span class="region-name">${escapeHtml(region)}${isAlmostDone ? almostDoneMarkup(stats.remaining) : ""}</span>
             ${progressRingMarkup({
               key: `region:${region}`,
               percent: stats.percent,
@@ -9784,7 +9893,7 @@
       };
       els.regionTitle.textContent = state.region;
       els.tabs.innerHTML = ["Все категории", ...visibleCategories].map(category => `
-        <button class="tab ${state.category === category ? "active" : ""}" data-category="${escapeHtml(category)}">${categoryLabel(category)}</button>
+        <button class="tab category-tag ${state.category === category ? "active" : ""}" data-category="${escapeHtml(category)}">${categoryLabel(category)}</button>
       `).join("");
     }
 
@@ -10299,7 +10408,9 @@
     function toggleCollectedItem(id, trigger) {
       const item = items.find(entry => entry.id === id);
       const affectedRegion = item ? parentRegion(item.region) : "";
+      const affectedCategory = item?.category || "";
       const previousRegionPercent = affectedRegion ? completion(regionItems(affectedRegion)).percent : 0;
+      const wasCategoryComplete = affectedCategory ? isHeaderCategoryComplete(affectedCategory) : false;
       const done = !state.done.has(id);
       done ? state.done.add(id) : state.done.delete(id);
       saveDone();
@@ -10307,6 +10418,8 @@
       updateProgressRings(true);
       const nextRegionPercent = affectedRegion ? completion(regionItems(affectedRegion)).percent : 0;
       const completedRegion = done && affectedRegion && previousRegionPercent < 100 && nextRegionPercent === 100;
+      const completedCategory = done && affectedCategory && !wasCategoryComplete && isHeaderCategoryComplete(affectedCategory);
+      updateAlmostDoneRegionButton(affectedRegion);
       const step = trigger?.closest(".step")
         || [...els.route.querySelectorAll(".step")].find(row => row.querySelector("[data-toggle]")?.dataset.toggle === id);
       if (step) {
@@ -10315,10 +10428,12 @@
         window.setTimeout(() => {
           render();
           if (completedRegion) requestAnimationFrame(() => celebrateRegionCompletion(affectedRegion));
+          if (completedCategory) requestAnimationFrame(() => flashCompletedCategory(affectedCategory));
         }, 700);
       } else {
         render();
         if (completedRegion) requestAnimationFrame(() => celebrateRegionCompletion(affectedRegion));
+        if (completedCategory) requestAnimationFrame(() => flashCompletedCategory(affectedCategory));
         animateDetailIn();
       }
     }
@@ -10864,7 +10979,7 @@
 
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
-        const appShellVersion = "2026.06.23-06";
+        const appShellVersion = "2026.06.23-07";
         const appShellVersionKey = "elden-ring-app-shell-version";
         const storedShellVersion = localStorage.getItem(appShellVersionKey);
         if (storedShellVersion !== appShellVersion) {
