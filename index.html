@@ -1146,6 +1146,19 @@
       text-transform: uppercase;
     }
 
+    .reset-location-button {
+      margin-left: auto;
+      color: var(--theme-accent);
+      border-color: var(--theme-accent-dim);
+      background: transparent;
+    }
+
+    .reset-location-button:hover:not(:disabled) {
+      color: var(--theme-accent-strong);
+      border-color: var(--theme-accent);
+      background: rgba(var(--theme-accent-rgb), .1);
+    }
+
     .route {
       padding: 22px 26px 34px;
       overflow: visible;
@@ -1682,6 +1695,124 @@
       background: var(--panel-2);
     }
 
+    .primary:disabled,
+    .secondary:disabled,
+    .chip:disabled {
+      opacity: .42;
+      cursor: not-allowed;
+    }
+
+    .danger-button {
+      color: var(--theme-danger-text);
+      border-color: rgba(var(--theme-danger-rgb), .48);
+      background: rgba(var(--theme-danger-rgb), .1);
+    }
+
+    .danger-button:hover:not(:disabled) {
+      border-color: var(--theme-danger);
+      background: rgba(var(--theme-danger-rgb), .18);
+    }
+
+    .reset-dialog {
+      width: min(520px, calc(100vw - 32px));
+      padding: 0;
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: 0 24px 80px rgba(var(--theme-black-rgb), .72);
+    }
+
+    .reset-dialog::backdrop {
+      background: rgba(var(--theme-black-rgb), .76);
+      backdrop-filter: blur(4px);
+    }
+
+    .reset-dialog.danger {
+      border-color: rgba(var(--theme-danger-rgb), .58);
+      box-shadow: 0 24px 80px rgba(var(--theme-black-rgb), .72), 0 0 0 1px rgba(var(--theme-danger-rgb), .16);
+    }
+
+    .reset-dialog-content {
+      padding: 22px;
+    }
+
+    .reset-dialog-kicker {
+      margin-bottom: 7px;
+      color: var(--theme-accent);
+      font-size: 11px;
+      font-weight: 850;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .reset-dialog.danger .reset-dialog-kicker {
+      color: var(--theme-danger-text);
+    }
+
+    .reset-dialog h2 {
+      margin: 0 0 12px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 24px;
+    }
+
+    .reset-dialog-message {
+      margin: 0;
+      color: var(--soft);
+      line-height: 1.55;
+    }
+
+    .reset-confirm-check {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-top: 18px;
+      padding: 12px;
+      color: var(--theme-danger-text);
+      border: 1px solid rgba(var(--theme-danger-rgb), .34);
+      border-radius: var(--radius);
+      background: rgba(var(--theme-danger-rgb), .08);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .reset-confirm-check input {
+      width: 18px;
+      height: 18px;
+      margin: 1px 0 0;
+      accent-color: var(--theme-danger);
+    }
+
+    .reset-dialog-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 20px;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      z-index: 1200;
+      max-width: min(440px, calc(100vw - 32px));
+      padding: 11px 16px;
+      color: var(--text);
+      border: 1px solid rgba(var(--theme-accent-rgb), .38);
+      border-radius: var(--radius);
+      background: rgba(var(--theme-bg-secondary-rgb), .96);
+      box-shadow: 0 16px 44px rgba(var(--theme-black-rgb), .52);
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(-50%, 12px);
+      transition: opacity .2s ease, transform .2s ease;
+    }
+
+    .toast.visible {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
     .mini-progress {
       margin-top: 24px;
       padding-top: 18px;
@@ -2092,6 +2223,10 @@
         padding-bottom: 3px;
       }
 
+      .reset-location-button {
+        margin-left: 8px;
+      }
+
       .chip {
         flex: 0 0 auto;
       }
@@ -2158,7 +2293,8 @@
       }
 
       .actions,
-      .detail-links {
+      .detail-links,
+      .reset-dialog-actions {
         display: grid;
         grid-template-columns: 1fr;
       }
@@ -2261,6 +2397,7 @@
 
         <div class="sidebar-actions">
           <button class="secondary" id="editModeButton" data-toggle-edit-mode>Режим редактирования: выкл</button>
+          <button class="secondary danger-button" id="resetAllProgressButton" data-reset-all-progress>Сбросить весь прогресс</button>
           <button class="secondary edit-only" data-add-region>Добавить локацию</button>
           <button class="secondary edit-only" data-edit-region>Редактировать локацию</button>
           <button class="primary edit-only" data-add-item>Добавить предмет</button>
@@ -2281,6 +2418,7 @@
             <button class="chip active" data-status="all">Все</button>
             <button class="chip" data-status="open">Не собрано</button>
             <button class="chip" data-status="done">Собрано</button>
+            <button class="chip reset-location-button" id="resetLocationProgressButton" data-reset-location-progress>Сбросить локацию</button>
           </div>
         </div>
         <div id="route" class="route"></div>
@@ -2295,10 +2433,27 @@
     <input id="userDataInput" class="hidden-input" type="file" accept="application/json">
   </div>
 
-  <script src="tracker-data.js?v=20260624-01"></script>
+  <dialog class="reset-dialog" id="resetProgressDialog" aria-labelledby="resetProgressTitle">
+    <div class="reset-dialog-content">
+      <div class="reset-dialog-kicker" id="resetProgressKicker">Сброс прогресса</div>
+      <h2 id="resetProgressTitle">Подтверждение</h2>
+      <p class="reset-dialog-message" id="resetProgressMessage"></p>
+      <label class="reset-confirm-check" id="resetProgressCheckShell" hidden>
+        <input id="resetProgressCheck" type="checkbox">
+        <span>Я уверен</span>
+      </label>
+      <div class="reset-dialog-actions">
+        <button class="secondary" type="button" data-cancel-progress-reset>Отменить</button>
+        <button class="primary" id="confirmProgressResetButton" type="button" data-confirm-progress-reset>Подтвердить</button>
+      </div>
+    </div>
+  </dialog>
+  <div class="toast" id="progressToast" role="status" aria-live="polite"></div>
+
+  <script src="tracker-data.js?v=20260624-02"></script>
   <script>
     const trackerMeta = window.ELDEN_RING_TRACKER_META || {
-      databaseVersion: "2026.06.24-01",
+      databaseVersion: "2026.06.24-02",
       updatedAt: "2026-06-24",
       itemCount: 0,
       dlcItemCount: 0,
@@ -8829,6 +8984,16 @@
       tabs: document.querySelector("#tabs"),
       app: document.querySelector(".app"),
       editModeButton: document.querySelector("#editModeButton"),
+      resetLocationProgressButton: document.querySelector("#resetLocationProgressButton"),
+      resetAllProgressButton: document.querySelector("#resetAllProgressButton"),
+      resetProgressDialog: document.querySelector("#resetProgressDialog"),
+      resetProgressKicker: document.querySelector("#resetProgressKicker"),
+      resetProgressTitle: document.querySelector("#resetProgressTitle"),
+      resetProgressMessage: document.querySelector("#resetProgressMessage"),
+      resetProgressCheckShell: document.querySelector("#resetProgressCheckShell"),
+      resetProgressCheck: document.querySelector("#resetProgressCheck"),
+      confirmProgressResetButton: document.querySelector("#confirmProgressResetButton"),
+      progressToast: document.querySelector("#progressToast"),
       themeSwitcher: document.querySelector("[data-theme-switcher]"),
       themeToggle: document.querySelector("[data-theme-toggle]"),
       themeOptions: document.querySelectorAll("[data-theme-choice]"),
@@ -9067,6 +9232,107 @@
 
     function saveDone() {
       localStorage.setItem("elden-ring-route-done", JSON.stringify([...state.done]));
+    }
+
+    let pendingProgressReset = null;
+    let progressToastTimer = 0;
+
+    function collectedItems(list) {
+      return list.filter(item => state.done.has(item.id));
+    }
+
+    function showProgressToast(message) {
+      if (!els.progressToast) return;
+      window.clearTimeout(progressToastTimer);
+      els.progressToast.textContent = message;
+      els.progressToast.classList.add("visible");
+      progressToastTimer = window.setTimeout(() => {
+        els.progressToast.classList.remove("visible");
+      }, 2600);
+    }
+
+    function closeProgressResetDialog() {
+      pendingProgressReset = null;
+      if (els.resetProgressCheck) els.resetProgressCheck.checked = false;
+      if (els.resetProgressDialog?.open) els.resetProgressDialog.close();
+    }
+
+    function openProgressResetDialog(type) {
+      if (state.editMode) return;
+      const isAll = type === "all";
+      const targetItems = isAll ? items : regionItems(state.region);
+      const collected = collectedItems(targetItems);
+      if (!collected.length || (!isAll && state.region === "Все локации")) return;
+
+      pendingProgressReset = {
+        type,
+        region: isAll ? "" : state.region,
+        itemIds: collected.map(item => item.id)
+      };
+
+      els.resetProgressDialog.classList.toggle("danger", isAll);
+      els.resetProgressKicker.textContent = isAll ? "Опасное действие" : "Сброс локации";
+      els.resetProgressTitle.textContent = isAll ? "Сбросить весь прогресс трекера?" : "Сбросить прогресс для этой локации?";
+      els.resetProgressMessage.textContent = isAll
+        ? `Будут сняты отметки со всех собранных предметов (${collected.length}) в ${visibleRegions().length} локациях. Это действие нельзя отменить.`
+        : `Локация: ${state.region}. Будут сняты отметки с собранных предметов (${collected.length}). Это действие нельзя отменить.`;
+      els.resetProgressCheckShell.hidden = !isAll;
+      els.resetProgressCheck.checked = false;
+      els.confirmProgressResetButton.disabled = isAll;
+      els.confirmProgressResetButton.classList.toggle("danger-button", isAll);
+
+      if (typeof els.resetProgressDialog.showModal === "function") {
+        els.resetProgressDialog.showModal();
+      } else {
+        els.resetProgressDialog.setAttribute("open", "");
+      }
+    }
+
+    function confirmProgressReset() {
+      if (!pendingProgressReset || state.editMode) return;
+      if (pendingProgressReset.type === "all" && !els.resetProgressCheck.checked) return;
+
+      if (pendingProgressReset.type === "all") {
+        state.done.clear();
+        localStorage.removeItem("elden-ring-route-done");
+        showProgressToast("Прогресс сброшен");
+      } else {
+        pendingProgressReset.itemIds.forEach(id => state.done.delete(id));
+        saveDone();
+        showProgressToast("Прогресс сброшен");
+      }
+
+      playTone(220, 0.2, "sine", 0.06);
+      closeProgressResetDialog();
+      render();
+    }
+
+    function renderProgressResetActions() {
+      const locationCollected = state.region === "Все локации"
+        ? 0
+        : collectedItems(regionItems(state.region)).length;
+      const totalCollected = collectedItems(items).length;
+      const editing = state.editMode;
+
+      if (els.resetLocationProgressButton) {
+        els.resetLocationProgressButton.disabled = editing || !locationCollected;
+        els.resetLocationProgressButton.title = editing
+          ? "Недоступно в режиме редактирования"
+          : state.region === "Все локации"
+            ? "Выберите конкретную локацию"
+            : locationCollected
+              ? `Снять отметки с ${locationCollected} собранных предметов`
+              : "В этой локации нет собранных предметов";
+      }
+
+      if (els.resetAllProgressButton) {
+        els.resetAllProgressButton.disabled = editing || !totalCollected;
+        els.resetAllProgressButton.title = editing
+          ? "Недоступно в режиме редактирования"
+          : totalCollected
+            ? `Снять отметки со всех ${totalCollected} собранных предметов`
+            : "Собранных предметов пока нет";
+      }
     }
 
     function saveEdits() {
@@ -10519,6 +10785,7 @@
     function renderEditMode() {
       els.app.classList.toggle("edit-mode", state.editMode);
       els.editModeButton.textContent = state.editMode ? "Режим редактирования: вкл" : "Режим редактирования: выкл";
+      renderProgressResetActions();
     }
 
     function render() {
@@ -10745,6 +11012,10 @@
       const fillWikiButton = event.target.closest("[data-fill-wiki]");
       const clearSearchButton = event.target.closest("[data-clear-search]");
       const mobileBackButton = event.target.closest("[data-mobile-back]");
+      const resetLocationProgressButton = event.target.closest("[data-reset-location-progress]");
+      const resetAllProgressButton = event.target.closest("[data-reset-all-progress]");
+      const cancelProgressResetButton = event.target.closest("[data-cancel-progress-reset]");
+      const confirmProgressResetButton = event.target.closest("[data-confirm-progress-reset]");
 
       if (!state.editMode && (addItemButton || wikiImportButton || addRegionButton || editRegionButton || resetEditButton || deleteItemButton || fillWikiButton || deleteRegionButton || resetRegionButton || exportTrackerDataButton || clearLocalEditsButton)) {
         return;
@@ -10757,6 +11028,26 @@
 
       if (mobileBackButton) {
         goBackMobileView(mobileBackButton.dataset.mobileBack);
+        return;
+      }
+
+      if (cancelProgressResetButton) {
+        closeProgressResetDialog();
+        return;
+      }
+
+      if (confirmProgressResetButton) {
+        confirmProgressReset();
+        return;
+      }
+
+      if (resetLocationProgressButton) {
+        openProgressResetDialog("location");
+        return;
+      }
+
+      if (resetAllProgressButton) {
+        openProgressResetDialog("all");
         return;
       }
 
@@ -11054,6 +11345,10 @@
     });
 
     document.addEventListener("input", event => {
+      if (event.target === els.resetProgressCheck) {
+        els.confirmProgressResetButton.disabled = !event.target.checked;
+        return;
+      }
       const noteInput = event.target.closest("[data-player-note]");
       if (!noteInput) return;
       const id = noteInput.dataset.playerNote;
@@ -11064,6 +11359,11 @@
         delete state.playerNotes[id];
       }
       savePlayerNotes();
+    });
+
+    els.resetProgressDialog?.addEventListener("cancel", event => {
+      event.preventDefault();
+      closeProgressResetDialog();
     });
 
     els.search.addEventListener("input", event => {
@@ -11145,7 +11445,7 @@
 
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
-        const appShellVersion = "2026.06.24-01";
+        const appShellVersion = "2026.06.24-02";
         const appShellVersionKey = "elden-ring-app-shell-version";
         const storedShellVersion = localStorage.getItem(appShellVersionKey);
         if (storedShellVersion !== appShellVersion) {
