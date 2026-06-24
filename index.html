@@ -1490,8 +1490,22 @@
         rgba(var(--theme-bg-primary-rgb), .94);
     }
 
+    .detail-flip-stage {
+      perspective: 1000px;
+    }
+
     .detail {
       will-change: transform, opacity;
+    }
+
+    .detail-flip-inner {
+      backface-visibility: hidden;
+      transform-style: preserve-3d;
+      transition: transform .45s cubic-bezier(.4, 0, .2, 1);
+    }
+
+    .detail-flip-inner.flipping {
+      transform: rotateY(90deg);
     }
 
     .detail.is-sliding {
@@ -1587,6 +1601,16 @@
       padding: 10px;
       resize: vertical;
       line-height: 1.45;
+    }
+
+    .player-note-field {
+      clip-path: circle(0% at 0% 0%);
+      transition: clip-path .6s ease;
+      will-change: clip-path;
+    }
+
+    .player-note-field.revealed {
+      clip-path: circle(150% at 0% 0%);
     }
 
     .player-note:focus {
@@ -2265,6 +2289,10 @@
         padding: 0 16px 22px;
       }
 
+      .detail-flip-stage {
+        perspective: 600px;
+      }
+
       .detail {
         padding-top: 16px;
       }
@@ -2426,7 +2454,9 @@
 
       <aside class="inspector">
         <button class="mobile-back" type="button" data-mobile-back="items">← Назад</button>
-        <div id="detail" class="detail"></div>
+        <div class="detail-flip-stage">
+          <div id="detail-flip-inner" class="detail detail-flip-inner"></div>
+        </div>
       </aside>
     </main>
     <input id="backupInput" class="hidden-input" type="file" accept="application/json">
@@ -2450,10 +2480,10 @@
   </dialog>
   <div class="toast" id="progressToast" role="status" aria-live="polite"></div>
 
-  <script src="tracker-data.js?v=20260624-02"></script>
+  <script src="tracker-data.js?v=20260624-03"></script>
   <script>
     const trackerMeta = window.ELDEN_RING_TRACKER_META || {
-      databaseVersion: "2026.06.24-02",
+      databaseVersion: "2026.06.24-03",
       updatedAt: "2026-06-24",
       itemCount: 0,
       dlcItemCount: 0,
@@ -8980,7 +9010,7 @@
       regions: document.querySelector("#regions"),
       content: document.querySelector(".content"),
       route: document.querySelector("#route"),
-      detail: document.querySelector("#detail"),
+      detail: document.querySelector("#detail-flip-inner"),
       tabs: document.querySelector("#tabs"),
       app: document.querySelector(".app"),
       editModeButton: document.querySelector("#editModeButton"),
@@ -10456,6 +10486,50 @@
     }
 
     let revealRowsOnNextRender = false;
+    let detailFlipTimer = 0;
+    let playerNoteRevealTimer = 0;
+    let nextPlayerNoteRevealDelay = 100;
+
+    function revealPlayerNoteField(delay = 100) {
+      window.clearTimeout(playerNoteRevealTimer);
+      const field = els.detail.querySelector(".player-note-field");
+      if (!field) return;
+      field.classList.remove("revealed");
+      requestAnimationFrame(() => {
+        playerNoteRevealTimer = window.setTimeout(() => {
+          field.classList.add("revealed");
+        }, delay);
+      });
+    }
+
+    function applySelectedItemState(itemId) {
+      state.selectedId = itemId;
+      state.editing = false;
+      state.adding = false;
+      state.addingFromWiki = false;
+      state.addingRegion = false;
+      state.editingRegion = false;
+    }
+
+    function switchDetailWithFlip(itemId) {
+      const currentItemId = els.detail.dataset.itemId || "";
+      window.clearTimeout(detailFlipTimer);
+
+      if (!currentItemId || currentItemId === itemId) {
+        applySelectedItemState(itemId);
+        render();
+        animateDetailIn();
+        return;
+      }
+
+      els.detail.classList.add("flipping");
+      detailFlipTimer = window.setTimeout(() => {
+        applySelectedItemState(itemId);
+        nextPlayerNoteRevealDelay = 260;
+        render();
+        requestAnimationFrame(() => els.detail.classList.remove("flipping"));
+      }, 225);
+    }
 
     function revealRouteRows() {
       if (!revealRowsOnNextRender) return;
@@ -10542,6 +10616,9 @@
     }
 
     function renderDetail() {
+      window.clearTimeout(playerNoteRevealTimer);
+      delete els.detail.dataset.itemId;
+
       if (state.addingRegion) {
         els.detail.innerHTML = `
           <div class="detail-kicker">Новая локация</div>
@@ -10724,7 +10801,7 @@
           <div class="important">${selectedIssues.map(issue => escapeHtml(issue)).join("<br>")}</div>
         </div>
         ` : ""}
-        <div class="detail-section">
+        <div class="detail-section player-note-field">
           <div class="detail-section-title">Заметка игрока</div>
           <textarea class="player-note" data-player-note="${escapeHtml(selected.id)}" placeholder="Твоя заметка: что оставить на потом, какие условия проверить, где удобнее фармить...">${escapeHtml(playerNote)}</textarea>
         </div>
@@ -10772,6 +10849,9 @@
           <p>Файл ручных правок не трогает отметки собранных предметов: в нём только твои заметки, добавленные предметы, локации и изменения описаний.</p>
         </div>
       `;
+      els.detail.dataset.itemId = selected.id;
+      revealPlayerNoteField(nextPlayerNoteRevealDelay);
+      nextPlayerNoteRevealDelay = 100;
     }
 
     function renderStats() {
@@ -11159,14 +11239,7 @@
         pendingItemSelectTimer = window.setTimeout(() => {
           pendingItemSelectTimer = 0;
           playTone(550, 0.08, "sine", 0.05);
-          state.selectedId = selectedId;
-          state.editing = false;
-          state.adding = false;
-          state.addingFromWiki = false;
-          state.addingRegion = false;
-          state.editingRegion = false;
-          render();
-          animateDetailIn();
+          switchDetailWithFlip(selectedId);
           setMobileView("detail", { pushHistory: true });
         }, 250);
         return;
@@ -11445,7 +11518,7 @@
 
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
-        const appShellVersion = "2026.06.24-02";
+        const appShellVersion = "2026.06.24-03";
         const appShellVersionKey = "elden-ring-app-shell-version";
         const storedShellVersion = localStorage.getItem(appShellVersionKey);
         if (storedShellVersion !== appShellVersion) {
