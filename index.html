@@ -1033,6 +1033,53 @@
       background: var(--gold);
     }
 
+    .status-tabs {
+      position: relative;
+      display: flex;
+      flex: 0 0 auto;
+      gap: 4px;
+      width: fit-content;
+      padding: 4px;
+      border: 1px solid rgba(var(--theme-border-rgb), .76);
+      border-radius: 999px;
+      background: var(--theme-bg-tertiary);
+    }
+
+    .status-tab {
+      position: relative;
+      z-index: 1;
+      min-height: 30px;
+      padding: 6px 16px;
+      color: var(--theme-text-secondary);
+      border: 0;
+      border-radius: 999px;
+      background: transparent;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 760;
+      line-height: 1;
+      transition: color .3s ease;
+    }
+
+    .status-tab.active {
+      color: var(--theme-bg-primary);
+    }
+
+    .elastic-pill {
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      height: calc(100% - 8px);
+      width: 0;
+      border-radius: 999px;
+      background: var(--theme-accent);
+      box-shadow: 0 8px 22px rgba(var(--theme-accent-rgb), .18);
+      transition:
+        transform .35s cubic-bezier(.34, 1.56, .64, 1),
+        width .35s cubic-bezier(.34, 1.56, .64, 1),
+        background .25s ease;
+    }
+
     .chip:disabled,
     .chip.disabled {
       opacity: .45;
@@ -1697,6 +1744,15 @@
 
     .mobile-back {
       display: none;
+    }
+
+    .app-content-wrapper {
+      transition: filter .35s ease;
+    }
+
+    .app-content-wrapper.blurred {
+      filter: blur(3px) brightness(.7);
+      pointer-events: none;
     }
 
     .primary,
@@ -2415,7 +2471,7 @@
       </div>
     </header>
 
-    <main class="layout">
+    <main class="layout app-content-wrapper">
       <aside class="sidebar">
         <div class="section-title">
           <span>Локации</span>
@@ -2443,9 +2499,12 @@
           <div id="tabs" class="tabs"></div>
           <div class="sort-row" aria-label="Фильтр по статусу">
             <span>Статус</span>
-            <button class="chip active" data-status="all">Все</button>
-            <button class="chip" data-status="open">Не собрано</button>
-            <button class="chip" data-status="done">Собрано</button>
+            <div class="status-tabs" id="status-tabs">
+              <div class="elastic-pill" id="status-pill"></div>
+              <button class="status-tab active" type="button" data-status="all">Все</button>
+              <button class="status-tab" type="button" data-status="open">Не собрано</button>
+              <button class="status-tab" type="button" data-status="done">Собрано</button>
+            </div>
             <button class="chip reset-location-button" id="resetLocationProgressButton" data-reset-location-progress>Сбросить локацию</button>
           </div>
         </div>
@@ -2480,11 +2539,11 @@
   </dialog>
   <div class="toast" id="progressToast" role="status" aria-live="polite"></div>
 
-  <script src="tracker-data.js?v=20260624-03"></script>
+  <script src="tracker-data.js?v=20260629-01"></script>
   <script>
     const trackerMeta = window.ELDEN_RING_TRACKER_META || {
-      databaseVersion: "2026.06.24-03",
-      updatedAt: "2026-06-24",
+      databaseVersion: "2026.06.29-01",
+      updatedAt: "2026-06-29",
       itemCount: 0,
       dlcItemCount: 0,
       changeLog: []
@@ -3050,7 +3109,7 @@
     }
 
     function shouldReceiveRegionalMapLink(item) {
-      const skippedCategories = new Set(["Стрелы и болты", "Инструменты"]);
+      const skippedCategories = new Set(["Стрелы и болты"]);
       return mapGenieAutoSearchRegions.has(parentRegion(item.region)) &&
         !skippedCategories.has(item.category) &&
         !isFarmOrDropItem(item) &&
@@ -7916,7 +7975,6 @@
       ["Сценарный камень", "Крепость круглого стола", "Торговцы", "Покупка", "Показывает больше сообщений из других миров."],
       ["Голова юного предка", "Река Сиофра", "Сундук у последователей предков", "Сундук", "Инструмент, выпускающий духовный пар."],
       ["Оковы Маргита", "Грязная пещера", "Лоскутик", "Покупка", "Временно сковывает Маргита и Морготта."],
-      ["Оковы Мога", "Подземелье отчуждения", "Подземные маршруты Лейнделла", "Лут", "Временно сковывает Мога."],
       ["Богохульный коготь", "Разрушающийся Фарум-Азула", "Бернал", "Вторжение", "Выпадает с Бернала в Фарум-Азуле."],
       ["Игла Микеллы", "Святое древо Микеллы", "Сюжетная линия Миллисенты / Маления", "Квест", "Ключевой инструмент для снятия Яростного Пламени."],
       ["Благословение балдахина", "Крепость круглого стола", "Фиа", "NPC", "Получается от Фии после объятия."],
@@ -8221,31 +8279,6 @@
 
     const mergedItemIds = {};
     const itemSynonymGroups = [
-      { category: "Инструменты", canonical: "Благословление балдахина", aliases: ["Благословение балдахина"] },
-      { category: "Инструменты", canonical: "Благословление сияющего балдахина", aliases: ["Благословение светящегося балдахина"] },
-      { category: "Инструменты", canonical: "Аромат вскипания крови", aliases: ["Кроваво-кипящий аромат"] },
-      { category: "Инструменты", canonical: "Аромат железного горшка", aliases: ["Железный аромат"] },
-      { category: "Инструменты", canonical: "Бодрящий аромат", aliases: ["Поднимающий дух аромат"] },
-      { category: "Инструменты", canonical: "Позолоченная птичья лапка", aliases: ["Маринованная птичья лапка", "Золотая маринованная птичья лапка"] },
-      { category: "Инструменты", canonical: "Молниевая смазка", aliases: ["Молниеносная смазка"] },
-      { category: "Инструменты", canonical: "Молниевая смазка с нитью", aliases: ["Молниеносная смазка с нитью"] },
-      { category: "Инструменты", canonical: "Огненный горшок", aliases: ["Горшок с огнём"] },
-      { category: "Инструменты", canonical: "Вулканический горшок", aliases: ["Горшок с огнём вулкана"] },
-      { category: "Инструменты", canonical: "Горшок гниения", aliases: ["Гнилостный горшок"] },
-      { category: "Инструменты", canonical: "Горшок яда", aliases: ["Ядовитый горшок"] },
-      { category: "Инструменты", canonical: "Горшок со святой водой", aliases: ["Священный горшок"] },
-      { category: "Инструменты", canonical: "Горшок с проклятой кровью", aliases: ["Проклято-кровавый горшок"] },
-      { category: "Инструменты", canonical: "Дремотный горшок", aliases: ["Усыпляющий горшок"] },
-      { category: "Инструменты", canonical: "Магический горшок академии", aliases: ["Магический горшок"] },
-      { category: "Инструменты", canonical: "Пилюли от кровотечения", aliases: ["Кровоостанавливающие пилюли"] },
-      { category: "Инструменты", canonical: "Пилюли от обморожения", aliases: ["Оттаивающие пилюли"] },
-      { category: "Инструменты", canonical: "Пилюли от отравления", aliases: ["Лекарство отравления"] },
-      { category: "Инструменты", canonical: "Оберегающие пилюли", aliases: ["Очищающие пилюли"] },
-      { category: "Инструменты", canonical: "Проясняющие пилюли", aliases: ["Просветляющие пилюли"] },
-      { category: "Инструменты", canonical: "Молниестойкая сушёная печень", aliases: ["Грозостойкая сушёная печень"] },
-      { category: "Инструменты", canonical: "Отсекатель пальцев", aliases: ["Отсекатель пальца"] },
-      { category: "Инструменты", canonical: "Скрюченный палец Погасшего", aliases: ["Скрученный палец Погасшего"] },
-      { category: "Инструменты", canonical: "Скрюченный палец дуэлянта", aliases: ["Палец дуэлянта"] },
       { category: "Оружие", canonical: "Коготь зверя", aliases: ["Коготь зверя (оружие)"] },
       { category: "Оружие", canonical: "Раздвоенный топорик", aliases: ["Раздвоенный топор"] },
       { category: "Броня", canonical: "Комплект огненного рыцаря", aliases: ["Комплект Огненного рыцаря"] }
@@ -8409,8 +8442,6 @@
       ...createFandomSourcedItems("Оружие", "fandom-base-weapon", baseWeaponRows),
       ...createFandomSourcedItems("Щиты", "fandom-base-shield", baseShieldRows),
       ...createFandomSourcedItems("Стрелы и болты", "fandom-base-ammo", baseAmmoRows),
-      ...createFandomSourcedItems("Инструменты", "fandom-base-tool", baseToolRows),
-      ...createFandomSourcedItems("Инструменты", "fandom-additional-tool", additionalToolRows),
       ...createFandomSourcedItems("Пепел войны", "fandom-base-ash", baseAshOfWarRows),
       ...createFandomSourcedItems("Духи", "fandom-spirit-ash", spiritAshRows)
     );
@@ -8491,7 +8522,6 @@
     function isGenericNoiseItem(item) {
       const text = [item.location, item.source, item.note, item.warning].join(" ").toLowerCase();
       return (
-        item.category === "Инструменты" ||
         item.name.startsWith("Золотая руна") ||
         item.source === "Мультиплеер" ||
         text.includes("сетевая игра") ||
@@ -8504,7 +8534,6 @@
         if (
           items[index].category === "Материалы" ||
           items[index].category === "Стрелы и болты" ||
-          items[index].category === "Инструменты" ||
           repeatedProgressionResourceNames.has(items[index].name) ||
           repeatedCraftingMaterialNames.has(items[index].name) ||
           isGenericNoiseItem(items[index])
@@ -8965,6 +8994,65 @@
     }
 
     cleanRemovedRegionStorage();
+
+    function cleanRemovedItemStorage() {
+      const removedCategory = "Инструменты";
+      const removedNames = new Set(["Оковы Мога", "Оковы Мог", "Чадо знамения"]);
+      const removedIds = new Set(
+        [...removedNames].flatMap(name => [
+          `fandom-location-${catalogId(removedCategory, name)}`,
+          `fandom-base-tool-${catalogId(removedCategory, name)}`,
+          `fandom-additional-tool-${catalogId(removedCategory, name)}`
+        ])
+      );
+
+      const readJson = (key, fallback) => {
+        try {
+          const value = localStorage.getItem(key);
+          return value ? JSON.parse(value) : fallback;
+        } catch {
+          return fallback;
+        }
+      };
+
+      const writeJson = (key, value) => {
+        try {
+          localStorage.setItem(key, JSON.stringify(value));
+        } catch {
+          // Local cleanup is best-effort; the current session still uses the clean dataset.
+        }
+      };
+
+      const isRemovedItem = item =>
+        item &&
+        typeof item === "object" &&
+        (removedIds.has(item.id) || item.category === removedCategory || removedNames.has(item.name));
+
+      const customItems = readJson("elden-ring-route-custom-items", []);
+      if (Array.isArray(customItems)) {
+        writeJson("elden-ring-route-custom-items", customItems.filter(item => !isRemovedItem(item)));
+      }
+
+      const edits = readJson("elden-ring-route-edits", {});
+      if (edits && typeof edits === "object" && !Array.isArray(edits)) {
+        Object.keys(edits).forEach(id => {
+          if (removedIds.has(id) || isRemovedItem({ id, ...edits[id] })) delete edits[id];
+        });
+        writeJson("elden-ring-route-edits", edits);
+      }
+
+      const deletedItems = readJson("elden-ring-route-deleted-items", []);
+      if (Array.isArray(deletedItems)) {
+        writeJson("elden-ring-route-deleted-items", deletedItems.filter(id => !removedIds.has(id)));
+      }
+
+      const done = readJson("elden-ring-route-done", []);
+      if (Array.isArray(done)) {
+        writeJson("elden-ring-route-done", done.filter(id => !removedIds.has(id)));
+      }
+    }
+
+    cleanRemovedItemStorage();
     localStorage.removeItem("elden-ring-item-icons");
     localStorage.removeItem("elden-ring-item-icons-version");
     localStorage.removeItem("elden-ring-region-images");
@@ -9016,7 +9104,10 @@
       editModeButton: document.querySelector("#editModeButton"),
       resetLocationProgressButton: document.querySelector("#resetLocationProgressButton"),
       resetAllProgressButton: document.querySelector("#resetAllProgressButton"),
+      statusTabs: document.querySelector("#status-tabs"),
+      statusPill: document.querySelector("#status-pill"),
       resetProgressDialog: document.querySelector("#resetProgressDialog"),
+      appContentWrapper: document.querySelector(".app-content-wrapper"),
       resetProgressKicker: document.querySelector("#resetProgressKicker"),
       resetProgressTitle: document.querySelector("#resetProgressTitle"),
       resetProgressMessage: document.querySelector("#resetProgressMessage"),
@@ -9284,6 +9375,7 @@
     function closeProgressResetDialog() {
       pendingProgressReset = null;
       if (els.resetProgressCheck) els.resetProgressCheck.checked = false;
+      els.appContentWrapper?.classList.remove("blurred");
       if (els.resetProgressDialog?.open) els.resetProgressDialog.close();
     }
 
@@ -9310,6 +9402,7 @@
       els.resetProgressCheck.checked = false;
       els.confirmProgressResetButton.disabled = isAll;
       els.confirmProgressResetButton.classList.toggle("danger-button", isAll);
+      els.appContentWrapper?.classList.add("blurred");
 
       if (typeof els.resetProgressDialog.showModal === "function") {
         els.resetProgressDialog.showModal();
@@ -10372,6 +10465,13 @@
       document.querySelectorAll("[data-status]").forEach(button => {
         button.classList.toggle("active", button.dataset.status === state.status);
       });
+      moveElasticPill();
+    }
+
+    function moveElasticPill(tabEl = els.statusTabs?.querySelector(".status-tab.active")) {
+      if (!els.statusPill || !tabEl || !els.statusTabs?.contains(tabEl)) return;
+      els.statusPill.style.width = `${tabEl.offsetWidth}px`;
+      els.statusPill.style.transform = `translateX(${tabEl.offsetLeft - 4}px)`;
     }
 
     function renderFilterMeta() {
@@ -11438,6 +11538,9 @@
       event.preventDefault();
       closeProgressResetDialog();
     });
+    els.resetProgressDialog?.addEventListener("close", () => {
+      els.appContentWrapper?.classList.remove("blurred");
+    });
 
     els.search.addEventListener("input", event => {
       state.search = event.target.value;
@@ -11485,6 +11588,10 @@
       event.target.value = "";
     });
 
+    window.addEventListener("resize", () => {
+      moveElasticPill();
+    });
+
     render();
   </script>
   <script>
@@ -11518,7 +11625,7 @@
 
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
-        const appShellVersion = "2026.06.24-03";
+        const appShellVersion = "2026.06.29-03";
         const appShellVersionKey = "elden-ring-app-shell-version";
         const storedShellVersion = localStorage.getItem(appShellVersionKey);
         if (storedShellVersion !== appShellVersion) {
